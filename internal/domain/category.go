@@ -23,6 +23,7 @@ const (
 
 type CategoryAttribute struct {
 	ID         int
+	CategoryID int
 	Name       string
 	DataType   DataType
 	IsRequired bool
