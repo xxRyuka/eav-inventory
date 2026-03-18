@@ -3,8 +3,10 @@ package postgres
 import (
 	"context"
 	"eav-intentory/internal/domain"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -31,7 +33,7 @@ func (c *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 	}
 
 	for _, attribute := range category.Attributes {
-		attributeQuery := `insert into category_attributes (category_id,name,datatype,isrequired) values ($1,$2,$3,$4)`
+		attributeQuery := `insert into category_attributes (category_id,name,data_type,is_required) values ($1,$2,$3,$4)`
 		_, err := tx.Exec(ctx, attributeQuery, category.ID, attribute.Name, attribute.DataType, attribute.IsRequired)
 		if err != nil {
 			return fmt.Errorf("nitelik (%s) eklenirken hata: %w", attribute.Name, err)
@@ -46,8 +48,49 @@ func (c *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 }
 
 func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Category, error) {
-	//TODO implement me
-	panic("implement me")
+
+	category := &domain.Category{}
+	categoryQuery := `select id, name, parent_id from categories where id=$1`
+	// parent_id veritabanında NULL olabileceği için onu bir pointer ile karşılıyoruz.
+	var parentID *int
+	row := c.db.QueryRow(ctx, categoryQuery, id)
+	err := row.Scan(&category.ID, &category.Name, &parentID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("Kategori bulunamadı (ID :%v)", id)
+		}
+		return nil, fmt.Errorf("Kategori sorgulanırken olusan hata : %w", err)
+	}
+	//if parentID != nil {
+
+	category.ParentID = parentID
+	//}
+
+	//attributelerini cekeceğiz simdi
+
+	attributesQuery := `select id ,name, data_type ,is_required from category_attributes where category_id=$1`
+
+	rows, err := c.db.Query(ctx, attributesQuery, category.ID)
+	if err != nil {
+		return nil, fmt.Errorf("Kategori attributeleri sorgularınrken cıkan hata : %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var attr domain.CategoryAttribute
+		err := rows.Scan(&attr.ID, &attr.Name, &attr.DataType, &attr.IsRequired)
+		if err != nil {
+			return nil, fmt.Errorf("Kategori attributeleri scan ile yerleştirilirken cıkan hata : %w", err)
+		}
+
+		category.Attributes = append(category.Attributes, attr)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("nitelik dongusunde hata %w", err)
+	}
+	return category, nil
 }
 
 func (c *CategoryRepository) Delete(ctx context.Context, id int) error {

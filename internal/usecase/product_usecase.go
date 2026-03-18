@@ -3,13 +3,11 @@ package usecase
 import (
 	"context"
 	"eav-intentory/internal/domain"
-	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 )
 
-// Burda usecaaselerde bişey kafamı karıstırdı neden interface ve struct kullanıyoruz ki sadece struct işimizi gormez mi ?
-// sonucta usecase db gibi değil değişmez birşey lütfen haksizsam haksızsın de gercekten gerekliliğini ogrenmek istiyorum?
-// ve niye bu struct private ?
 type ProductUseCase interface {
 	CreateProduct(ctx context.Context, product *domain.Product) error
 }
@@ -20,42 +18,68 @@ type productUseCase struct {
 }
 
 func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Product) error {
+
 	err := product.Validate()
 	if err != nil {
 		return err
 	}
-
+	// Gelen CategoryID gerçekten veritabanında var mı?
 	category, err := p.categoryRepo.GetById(ctx, product.CategoryId)
 	if err != nil {
-		return errors.New("kategori bulunamadi")
+		return err
 	}
-
 	attributes := category.Attributes
-	for _, attribute := range attributes {
-		if attribute.IsRequired == true {
-			found := false
-			for _, pav := range product.AttributeValues {
-				if pav.AttributeID == attribute.ID {
-					found = true
-					break
-				}
-				if !found {
+	//Kullanıcının gönderdiği nitelikler, bu kategorinin şablonunda mevcut mu?
+	//Şablon "Bu alan zorunludur" diyorsa, kullanıcı boş geçmiş mi?
 
-					return fmt.Errorf("zorunlu nitelik eksik: %s (ID: %d)", attribute.Name, attribute.ID)
-				}
+	for _, attribute := range attributes {
+
+		var userValue *domain.ProductAttributeValue // burda neden kodda pointer kullandın == Kodda kendim gordum yazarken pointer kullanmaz isek nil kontrolu yapamayiz
+		for i, value := range product.AttributeValues {
+			if value.AttributeID == attribute.ID {
+				userValue = &product.AttributeValues[i] // Buraya direk value diyemez miydik ? => diyemezdik üzerinde değişiklik yaptıgımız tek sey for dongusu için gecici olarak acılan değişken olurdu bu durumda !
+				// Artık user value değişkenini değiştirmek gercek değeride değiştirecek !
+				break
 			}
 		}
+		if attribute.IsRequired && userValue == nil {
+			return fmt.Errorf("Zorunlu Nitelik Alanı Boş %v", attribute.Name)
+		}
+		// KURAL 2: Tip Kontrolü (Eğer kullanıcı değer gönderdiyse)
+		if userValue != nil {
+			cleanVal := strings.TrimSpace(userValue.Value)
+
+			switch attribute.DataType {
+			case domain.TypeInt:
+				_, err = strconv.Atoi(cleanVal)
+				if err != nil {
+					return fmt.Errorf("'%s' alani tam sayi olmalidir, girilen gecersiz deger: %s", attribute.Name, userValue.Value)
+				}
+			case domain.TypeBool:
+				if _, err = strconv.ParseBool(cleanVal); err != nil {
+					return fmt.Errorf("%s alani boolean ifade olmalidir gidirlen gecersiz deger %s", attribute.Name, userValue.Value)
+				}
+			case domain.TypeString:
+				// String ise zaten string'dir, ekstra bir kontrole gerek yok ama boş mu diye bakabiliriz.
+				if cleanVal == "" {
+					return fmt.Errorf("'%s' alani bos birakilamaz", attribute.Name)
+				}
+			}
+			userValue.Value = cleanVal // Burda temizledik ama tekrar producta yazmadıık ?
+
+		}
+
 	}
 
 	err = p.productRepo.Create(ctx, product)
 	if err != nil {
-		return err
+		return fmt.Errorf("Veritabanına Kaydolurken Hata Oldu %w", err)
 	}
-	return nil
 
+	return nil
+	// ?? Şablon "Bu alan tam sayıdır" diyorsa, kullanıcı harf girmiş mi? bu kontrolu nasıl yaparım bilemedim
 }
 
-// Burdan neden bir interface donuyoz ya ?? bide neden basına * koymuyoz
 func NewProductUseCase(productRepository domain.ProductRepository, categoryRepository domain.CategoryRepository) ProductUseCase {
 	return &productUseCase{
 		productRepo:  productRepository,
