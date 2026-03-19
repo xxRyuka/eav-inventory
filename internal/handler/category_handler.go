@@ -2,10 +2,12 @@ package handler
 
 import (
 	"eav-intentory/internal/domain"
+	"eav-intentory/internal/handler/dto"
 	"eav-intentory/internal/usecase"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type CategoryHandler struct {
@@ -16,24 +18,12 @@ func NewCategoryHandler(useCase usecase.CategoryUseCase) *CategoryHandler {
 	return &CategoryHandler{categoryService: useCase}
 }
 
-// Dto's
-type CategoryAttributeDto struct {
-	AttributeID int  `json:"attributeId"`
-	IsRequired  bool `json:"isRequired"`
-}
-
-type createCategoryRequest struct {
-	Name       string                 `json:"name"`
-	ParentID   *int                   `json:"parentID,omitempty"`
-	Attributes []CategoryAttributeDto `json:"attributes"`
-}
-
 func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		response.ErrorJson(w, http.StatusMethodNotAllowed, "gecersiz method", fmt.Errorf("Gecersiz Method"))
 		return
 	}
-	req := createCategoryRequest{}
+	req := dto.CreateCategoryRequest{}
 	err := response.ReadJson(w, r, &req)
 	if err != nil {
 		response.ErrorJson(w, http.StatusBadRequest, "json bind edilemedi", err)
@@ -43,7 +33,6 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	for _, attributeDto := range req.Attributes {
 		attr := domain.CategoryAttribute{
-			//ID:         0,
 			AttributeID: attributeDto.AttributeID,
 			IsRequired:  attributeDto.IsRequired,
 		}
@@ -64,4 +53,45 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WriteJson(w, http.StatusCreated, category.ID, "islem basarili")
+}
+
+func (h *CategoryHandler) GetCategoryById(w http.ResponseWriter, r *http.Request) {
+
+	//id := r.URL.Query().Get("id") // queryden değil patthen cekeceğiz
+
+	id := r.PathValue("id")
+
+	idINT, err := strconv.Atoi(id)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "0'dan büyük bir tam sayi id'si gonder", err)
+		return
+	}
+	category, err := h.categoryService.GetCategoryById(r.Context(), idINT)
+	if err != nil {
+		response.ErrorJson(w, http.StatusInternalServerError, "Hata Olustu ", fmt.Errorf("error %w", err))
+		return
+	}
+
+	var attrDtos []dto.CategoryAttributeResponse
+
+	for _, k := range category.Attributes {
+		attrDto := dto.CategoryAttributeResponse{
+			AttributeID: k.AttributeID,
+			IsRequired:  k.IsRequired,
+			Code:        k.Attribute.Code,
+			Name:        k.Attribute.Name,
+			DataType:    string(k.Attribute.DataType),
+		}
+
+		attrDtos = append(attrDtos, attrDto)
+	}
+
+	resp := dto.CategoryResponse{
+		ID:         category.ID,
+		Name:       category.Name,
+		ParentID:   category.ParentID,
+		Attributes: attrDtos,
+	}
+
+	response.WriteJson(w, http.StatusOK, resp, "")
 }

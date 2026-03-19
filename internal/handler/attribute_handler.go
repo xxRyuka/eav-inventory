@@ -2,6 +2,7 @@ package handler
 
 import (
 	"eav-intentory/internal/domain"
+	"eav-intentory/internal/handler/dto"
 	"eav-intentory/internal/usecase"
 	"eav-intentory/pkg/response"
 	"fmt"
@@ -18,19 +19,13 @@ func NewAttributeHandler(attributeUsecase usecase.AttributeUsecase) *AttributeHa
 	return &AttributeHandler{attrUsecase: attributeUsecase}
 }
 
-type CreateAttributeRequest struct {
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	DataType string `json:"dataType"`
-}
-
 func (h *AttributeHandler) CreateAttribute(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		response.ErrorJson(w, http.StatusMethodNotAllowed, "yanlis method bu endpoint post ile calısıyor ", fmt.Errorf("%v istegi gelmis post isteği atmalisin", r.Method))
 		return
 	}
-	var req CreateAttributeRequest
+	var req dto.CreateAttributeRequest
 	err := response.ReadJson(w, r, &req)
 	if err != nil {
 		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", fmt.Errorf("Json okunup structa bind edilirken hata gerçekleşti %w", err))
