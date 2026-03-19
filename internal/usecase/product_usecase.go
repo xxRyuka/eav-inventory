@@ -36,33 +36,33 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Prod
 
 		var userValue *domain.ProductAttributeValue // burda neden kodda pointer kullandın == Kodda kendim gordum yazarken pointer kullanmaz isek nil kontrolu yapamayiz
 		for i, value := range product.AttributeValues {
-			if value.AttributeID == attribute.ID {
+			if value.AttributeID == attribute.AttributeID {
 				userValue = &product.AttributeValues[i] // Buraya direk value diyemez miydik ? => diyemezdik üzerinde değişiklik yaptıgımız tek sey for dongusu için gecici olarak acılan değişken olurdu bu durumda !
 				// Artık user value değişkenini değiştirmek gercek değeride değiştirecek !
 				break
 			}
 		}
 		if attribute.IsRequired && userValue == nil {
-			return fmt.Errorf("Zorunlu Nitelik Alanı Boş %v", attribute.Name)
+			return fmt.Errorf("Zorunlu Nitelik Alanı Boş %v", attribute.Attribute.Name)
 		}
 		// KURAL 2: Tip Kontrolü (Eğer kullanıcı değer gönderdiyse)
 		if userValue != nil {
 			cleanVal := strings.TrimSpace(userValue.Value)
 
-			switch attribute.DataType {
+			switch attribute.Attribute.DataType {
 			case domain.TypeInt:
 				_, err = strconv.Atoi(cleanVal)
 				if err != nil {
-					return fmt.Errorf("'%s' alani tam sayi olmalidir, girilen gecersiz deger: %s", attribute.Name, userValue.Value)
+					return fmt.Errorf("'%s' alani tam sayi olmalidir, girilen gecersiz deger: %s", attribute.Attribute.Name, userValue.Value)
 				}
 			case domain.TypeBool:
 				if _, err = strconv.ParseBool(cleanVal); err != nil {
-					return fmt.Errorf("%s alani boolean ifade olmalidir gidirlen gecersiz deger %s", attribute.Name, userValue.Value)
+					return fmt.Errorf("%s alani boolean ifade olmalidir gidirlen gecersiz deger %s", attribute.Attribute.Name, userValue.Value)
 				}
 			case domain.TypeString:
 				// String ise zaten string'dir, ekstra bir kontrole gerek yok ama boş mu diye bakabiliriz.
 				if cleanVal == "" {
-					return fmt.Errorf("'%s' alani bos birakilamaz", attribute.Name)
+					return fmt.Errorf("'%s' alani bos birakilamaz", attribute.Attribute.Name)
 				}
 			}
 			userValue.Value = cleanVal // Burda temizledik ama tekrar producta yazmadıık ?

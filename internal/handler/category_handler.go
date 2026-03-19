@@ -18,9 +18,8 @@ func NewCategoryHandler(useCase usecase.CategoryUseCase) *CategoryHandler {
 
 // Dto's
 type CategoryAttributeDto struct {
-	Name       string `json:"name"`
-	DataType   string `json:"dataType"` // JSON'dan saf string olarak gelir
-	IsRequired bool   `json:"isRequired"`
+	AttributeID int  `json:"attributeId"`
+	IsRequired  bool `json:"isRequired"`
 }
 
 type createCategoryRequest struct {
@@ -45,9 +44,8 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	for _, attributeDto := range req.Attributes {
 		attr := domain.CategoryAttribute{
 			//ID:         0,
-			Name:       attributeDto.Name,
-			DataType:   domain.DataType(attributeDto.DataType),
-			IsRequired: attributeDto.IsRequired,
+			AttributeID: attributeDto.AttributeID,
+			IsRequired:  attributeDto.IsRequired,
 		}
 
 		domainAttributes = append(domainAttributes, attr)

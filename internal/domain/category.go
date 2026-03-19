@@ -9,9 +9,8 @@ type DataType string
 
 // Domain Hataları (Dış dünyaya fırlatılacak standart sözlük)
 var (
-	ErrCategoryNameEmpty  = errors.New("kategori adi bos olamaz")
-	ErrAttributeNameEmpty = errors.New("nitelik adi bos olamaz")
-	ErrInvalidDataType    = errors.New("gecersiz veri tipi tanimlandi")
+	ErrCategoryNameEmpty = errors.New("kategori adi bos olamaz")
+	ErrInvalidDataType   = errors.New("gecersiz veri tipi tanimlandi")
 )
 
 const (
@@ -21,12 +20,13 @@ const (
 	TypeBool   DataType = "bool"
 )
 
+// refactoring !
+
+// value object
 type CategoryAttribute struct {
-	ID         int
-	CategoryID int
-	Name       string
-	DataType   DataType
-	IsRequired bool
+	AttributeID int
+	Attribute   Attribute
+	IsRequired  bool
 }
 
 // Category Go'da int tipinin varsayılan değeri 0'dır.
@@ -39,19 +39,14 @@ type Category struct {
 	Attributes []CategoryAttribute
 }
 
+// burayıda refactor ettim denemek lazım
 func (c *Category) Validate() error {
 	if strings.TrimSpace(c.Name) == "" {
 		return ErrCategoryNameEmpty
 	}
 	for _, attr := range c.Attributes {
-		if strings.TrimSpace(attr.Name) == "" {
-			return ErrAttributeNameEmpty
-		}
-		switch attr.DataType {
-		case TypeString, TypeInt, TypeBool, TypeFloat:
-			// Geçerli
-		default:
-			return ErrInvalidDataType
+		if (attr.AttributeID) <= 0 {
+			return errors.New("attribute id 0'dan kucuk olamaz ")
 		}
 	}
 	return nil

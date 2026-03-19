@@ -3,6 +3,7 @@ package response
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 )
 
@@ -11,6 +12,23 @@ type ApiResponse struct {
 	Data    any    `json:"data,omitempty"`
 	Message string `json:"message,omitempty"`
 	Error   string `json:"error,omitempty"`
+}
+type PagedRespondeData struct {
+	Data       any `json:"data,omitempty"`
+	TotalCount int `json:"totalCount,omitempty"`
+	PageSize   int `json:"pageSize,omitempty"`
+	Page       int `json:"page,omitempty"`
+	TotalPages int `json:"totalPages,omitempty"`
+}
+
+func CalculatedPagedResponse(data any, totalCount, pageSize, page int) *PagedRespondeData {
+	return &PagedRespondeData{
+		Data:       data,
+		TotalCount: totalCount,
+		PageSize:   pageSize,
+		Page:       page,
+		TotalPages: int(math.Ceil(float64(totalCount) / float64(pageSize))),
+	}
 }
 
 // WriteJson Basarili durum

@@ -11,7 +11,7 @@ import (
 )
 
 type CategoryRepository struct {
-	db *pgxpool.Pool // sql.db vermemiz gerkmiyormuydu ya ben burdaki pool muhabbetini falan tam anlamadım
+	db *pgxpool.Pool
 }
 
 func NewCategoryRepository(pool *pgxpool.Pool) domain.CategoryRepository {
@@ -33,10 +33,10 @@ func (c *CategoryRepository) Create(ctx context.Context, category *domain.Catego
 	}
 
 	for _, attribute := range category.Attributes {
-		attributeQuery := `insert into category_attributes (category_id,name,data_type,is_required) values ($1,$2,$3,$4)`
-		_, err := tx.Exec(ctx, attributeQuery, category.ID, attribute.Name, attribute.DataType, attribute.IsRequired)
+		attributeQuery := `insert into category_attributes (attribute_id,category_id,is_required) values ($1,$2,$3)`
+		_, err := tx.Exec(ctx, attributeQuery, attribute.AttributeID, category.ID, attribute.IsRequired)
 		if err != nil {
-			return fmt.Errorf("nitelik (%s) eklenirken hata: %w", attribute.Name, err)
+			return fmt.Errorf("nitelik (%v) eklenirken hata: %w", attribute.AttributeID, err)
 		}
 	}
 
@@ -68,42 +68,50 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Categ
 
 	//attributelerini cekeceğiz simdi
 
-	attributesQuery := `select id ,name, data_type ,is_required from category_attributes where category_id=$1`
+	attributesQuery := `select ca.attribute_id ,ca.is_required ,a.id ,a."name" ,a.code ,a.data_type 
+								from category_attributes ca
+								join "attributes" a  on a.id  = ca.attribute_id 
+								where ca.category_id =$1`
 
 	rows, err := c.db.Query(ctx, attributesQuery, category.ID)
 	if err != nil {
-		return nil, fmt.Errorf("Kategori attributeleri sorgularınrken cıkan hata : %w", err)
+		return nil, fmt.Errorf("kategori %v attributeleri sorgulanırken hata olustu %w", category.Name, err)
 	}
 	defer rows.Close()
 
+	var catAttrs []domain.CategoryAttribute
 	for rows.Next() {
-		var attr domain.CategoryAttribute
-		err := rows.Scan(&attr.ID, &attr.Name, &attr.DataType, &attr.IsRequired)
+		var cat_attr domain.CategoryAttribute
+		err = rows.Scan(
+			&cat_attr.AttributeID,
+			&cat_attr.IsRequired,
+			&cat_attr.Attribute.ID,
+			&cat_attr.Attribute.Name,
+			&cat_attr.Attribute.Code,
+			&cat_attr.Attribute.DataType)
 		if err != nil {
-			return nil, fmt.Errorf("Kategori attributeleri scan ile yerleştirilirken cıkan hata : %w", err)
+			return nil, fmt.Errorf("%v idli attribute %v kateogorisine eklenirken olusan hata %w", cat_attr.AttributeID, category.Name, err)
 		}
-
-		category.Attributes = append(category.Attributes, attr)
+		catAttrs = append(catAttrs, cat_attr)
 	}
-
 	err = rows.Err()
 	if err != nil {
 		return nil, fmt.Errorf("nitelik dongusunde hata %w", err)
 	}
+	category.Attributes = catAttrs
 	return category, nil
 }
 
+func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, error) {
+	//TODO implement me
+	panic("implement me")
+}
 func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
 func (c *CategoryRepository) Update(ctx context.Context, category *domain.Category) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, error) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -29,9 +29,22 @@ func main() {
 	productService := usecase.NewProductUseCase(productRepo, categoryRepo)
 	productHandler := handler.NewProductHandler(productService)
 
+	attributeRepo := postgres.NewAttributeRepository(pool)
+	attributeService := usecase.NewAttributeService(attributeRepo)
+	attributeHandler := handler.NewAttributeHandler(attributeService)
+
 	mux := http.NewServeMux()
+
+	//attributes
+	mux.HandleFunc("POST /attribute", attributeHandler.CreateAttribute)
+	mux.HandleFunc("GET /attribute/{id}", attributeHandler.GetAttributeByID)
+	mux.HandleFunc("GET /attribute/", attributeHandler.GetAttributes)
+
+	//categories
 	mux.HandleFunc("POST /category", categoryHandler.Create)
+	//products
 	mux.HandleFunc("POST /product", productHandler.CreateProduct)
+
 	server := http.Server{
 		Addr:         "localhost:8080",
 		Handler:      mux,
