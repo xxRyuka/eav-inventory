@@ -10,11 +10,19 @@ import (
 
 type ProductUseCase interface {
 	CreateProduct(ctx context.Context, product *domain.Product) error
+	GetProductById(ctx context.Context, id int) (*domain.Product, error)
 }
 
 type productUseCase struct {
 	productRepo  domain.ProductRepository
 	categoryRepo domain.CategoryRepository
+}
+
+func NewProductUseCase(productRepository domain.ProductRepository, categoryRepository domain.CategoryRepository) ProductUseCase {
+	return &productUseCase{
+		productRepo:  productRepository,
+		categoryRepo: categoryRepository,
+	}
 }
 
 func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Product) error {
@@ -65,7 +73,7 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Prod
 					return fmt.Errorf("'%s' alani bos birakilamaz", attribute.Attribute.Name)
 				}
 			}
-			userValue.Value = cleanVal // Burda temizledik ama tekrar producta yazmadıık ?
+			userValue.Value = cleanVal
 
 		}
 
@@ -80,9 +88,15 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Prod
 	// ?? Şablon "Bu alan tam sayıdır" diyorsa, kullanıcı harf girmiş mi? bu kontrolu nasıl yaparım bilemedim
 }
 
-func NewProductUseCase(productRepository domain.ProductRepository, categoryRepository domain.CategoryRepository) ProductUseCase {
-	return &productUseCase{
-		productRepo:  productRepository,
-		categoryRepo: categoryRepository,
+func (p *productUseCase) GetProductById(ctx context.Context, id int) (*domain.Product, error) {
+	if id <= 0 {
+		return nil, fmt.Errorf("0'dan büyük bir tam sayı değer giriniz id için (id:%v)", id)
 	}
+
+	product, err := p.productRepo.GetById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("db err : %w", err)
+	}
+
+	return product, nil
 }

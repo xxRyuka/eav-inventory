@@ -14,6 +14,7 @@ type ProductAttributeValue struct {
 	//ID          int
 	AttributeID int
 	Value       string
+	Attribute   Attribute
 }
 
 type Product struct {

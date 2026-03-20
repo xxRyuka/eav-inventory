@@ -70,7 +70,14 @@ func (h *AttributeHandler) GetAttributeByID(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	response.WriteJson(w, http.StatusOK, attribute, "")
+	attrDto := dto.AttributeResponse{
+		ID:       attribute.ID,
+		Code:     attribute.Code,
+		Name:     attribute.Name,
+		DataType: string(attribute.DataType),
+	}
+
+	response.WriteJson(w, http.StatusOK, attrDto, "")
 }
 
 func (h *AttributeHandler) GetAttributes(w http.ResponseWriter, r *http.Request) {

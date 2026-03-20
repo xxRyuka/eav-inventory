@@ -46,6 +46,7 @@ func main() {
 
 	//products
 	mux.HandleFunc("POST /product", productHandler.CreateProduct)
+	mux.HandleFunc("GET /product/{id}", productHandler.GetById)
 
 	server := http.Server{
 		Addr:         "localhost:8080",

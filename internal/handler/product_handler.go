@@ -7,6 +7,8 @@ import (
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type ProductHandler struct {
@@ -25,7 +27,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	req := dto.CreateProductRequest{}
 	err := response.ReadJson(w, r, &req)
 	if err != nil {
-		response.ErrorJson(w, http.StatusBadRequest, "bind edilemedi", fmt.Errorf("json okunamadı"))
+		response.ErrorJson(w, http.StatusBadRequest, "bind edilemedi", fmt.Errorf("json okunamadı %w", err))
 		return
 	}
 	product := domain.Product{
@@ -48,4 +50,44 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WriteJson(w, http.StatusCreated, product.ID, "Basarili")
+}
+
+func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
+
+	idPath := r.PathValue("id")
+
+	id, err := strconv.Atoi(strings.TrimSpace(idPath))
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "0'dan büyük tam sayi bir id giriniz (path)", fmt.Errorf("%w", err))
+		return
+	}
+
+	product, err := h.service.GetProductById(r.Context(), id)
+	if err != nil {
+		response.ErrorJson(w, http.StatusInternalServerError, "Veritabaninda hata meydana geldi", fmt.Errorf("olusan hata : %w", err))
+		return
+	}
+
+	resp := dto.ProductResponse{
+		ID:         product.ID,
+		Name:       product.Name,
+		CategoryID: product.CategoryId,
+		SKU:        product.SKU,
+		//Attributes: nil,
+	}
+	var attrs []dto.ProductAttributeResponse
+	for i, value := range product.AttributeValues {
+		attr := dto.ProductAttributeResponse{
+			AttributeID: product.AttributeValues[i].AttributeID,
+			Code:        value.Attribute.Code,
+			Name:        value.Attribute.Name,
+			DataType:    string(value.Attribute.DataType),
+			Value:       value.Value,
+		}
+		attrs = append(attrs, attr)
+
+	}
+	resp.Attributes = attrs
+
+	response.WriteJson(w, http.StatusOK, resp, "")
 }
