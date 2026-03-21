@@ -14,7 +14,7 @@ type ApiResponse struct {
 	Error   string `json:"error,omitempty"`
 }
 type PagedRespondeData struct {
-	Data       any `json:"data,omitempty"`
+	Data       any `json:"pagedData,omitempty"`
 	TotalCount int `json:"totalCount,omitempty"`
 	PageSize   int `json:"pageSize,omitempty"`
 	Page       int `json:"page,omitempty"`

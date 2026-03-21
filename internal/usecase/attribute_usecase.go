@@ -9,7 +9,7 @@ import (
 type AttributeUsecase interface {
 	CreateAttribute(ctx context.Context, attribute *domain.Attribute) error
 	GetAttributeByID(ctx context.Context, id int) (*domain.Attribute, error)
-	GetAttributes(ctx context.Context, page, limit int) ([]domain.Attribute, int, error)
+	GetAttributes(ctx context.Context, page, pageSize int) ([]domain.Attribute, int, error)
 }
 
 type attributeUsecase struct {

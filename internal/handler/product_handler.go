@@ -91,3 +91,55 @@ func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJson(w, http.StatusOK, resp, "")
 }
+
+func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	pageSize := r.URL.Query().Get("pageSize")
+
+	pageVal, err := strconv.Atoi(page)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "Query parametreleri yanlıs", err)
+		return
+	}
+	pageSizeVal, err := strconv.Atoi(pageSize)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "Query parametreleri yanlıs", err)
+
+		return
+	}
+
+	products, total, err := h.service.GetProducts(r.Context(), pageSizeVal, pageVal)
+	if err != nil {
+		response.ErrorJson(w, http.StatusInternalServerError, "ürünler veritabanından cekilirken hata olustu", fmt.Errorf("Hata : %w", err))
+		return
+	}
+
+	var resp []dto.ProductResponse
+
+	for _, product := range products {
+		prodDto := dto.ProductResponse{
+			ID:         product.ID,
+			Name:       product.Name,
+			CategoryID: product.CategoryId,
+			SKU:        product.SKU,
+			//Attributes: product.AttributeValues,
+		}
+		var pavs []dto.ProductAttributeResponse
+		for _, pav := range product.AttributeValues {
+			pavDto := dto.ProductAttributeResponse{
+				Code:        pav.Attribute.Code,
+				Name:        pav.Attribute.Name,
+				DataType:    string(pav.Attribute.DataType),
+				AttributeID: pav.AttributeID,
+				Value:       pav.Value,
+			}
+			pavs = append(pavs, pavDto)
+
+		}
+		prodDto.Attributes = pavs
+		resp = append(resp, prodDto)
+	}
+
+	x := response.CalculatedPagedResponse(resp, total, pageSizeVal, pageVal)
+	response.WriteJson(w, http.StatusOK, x, "")
+}

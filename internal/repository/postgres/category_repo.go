@@ -105,7 +105,9 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Categ
 func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, error) {
 	//TODO implement me
 	panic("implement me")
+
 }
+
 func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
 	//TODO implement me
 	panic("implement me")

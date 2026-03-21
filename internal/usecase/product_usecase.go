@@ -11,6 +11,7 @@ import (
 type ProductUseCase interface {
 	CreateProduct(ctx context.Context, product *domain.Product) error
 	GetProductById(ctx context.Context, id int) (*domain.Product, error)
+	GetProducts(ctx context.Context, pageSize, page int) ([]domain.Product, int, error)
 }
 
 type productUseCase struct {
@@ -99,4 +100,27 @@ func (p *productUseCase) GetProductById(ctx context.Context, id int) (*domain.Pr
 	}
 
 	return product, nil
+}
+func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int) ([]domain.Product, int, error) {
+	// optimizations
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	if page <= 0 {
+		page = 1
+	}
+
+	offset := (page - 1) * pageSize
+
+	products, total, err := p.productRepo.GetAll(ctx, pageSize, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	return products, total, nil
 }
