@@ -11,7 +11,7 @@ import (
 type ProductUseCase interface {
 	CreateProduct(ctx context.Context, product *domain.Product) error
 	GetProductById(ctx context.Context, id int) (*domain.Product, error)
-	GetProducts(ctx context.Context, pageSize, page int) ([]domain.Product, int, error)
+	GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]domain.Product, int, error)
 }
 
 type productUseCase struct {
@@ -101,7 +101,7 @@ func (p *productUseCase) GetProductById(ctx context.Context, id int) (*domain.Pr
 
 	return product, nil
 }
-func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int) ([]domain.Product, int, error) {
+func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]domain.Product, int, error) {
 	// optimizations
 
 	if pageSize <= 0 {
@@ -118,7 +118,9 @@ func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int) ([
 
 	offset := (page - 1) * pageSize
 
-	products, total, err := p.productRepo.GetAll(ctx, pageSize, offset)
+	// filters mapi ile ilgili burda ekstra validasyon yapmama gerek var mı bilemedim
+
+	products, total, err := p.productRepo.GetAll(ctx, pageSize, offset, filters)
 	if err != nil {
 		return nil, 0, err
 	}

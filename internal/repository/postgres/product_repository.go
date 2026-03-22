@@ -100,15 +100,40 @@ func (r *ProductRepository) Update(ctx context.Context, product *domain.Product)
 	panic("implement me")
 }
 
-func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int) ([]domain.Product, int, error) {
+func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, filters map[string][]string) ([]domain.Product, int, error) {
+	//cünkü tek sorgu yaparsak ürün*ürününNiteliği kadar satır doner
+	var args []any // parametreleri sırasıyla burda toplayıp querye tek parametre olarak vereceğim !
+	argsID := 1
+	whereQuery := ``
+	for key, valueArr := range filters {
+		whereQuery += fmt.Sprintf(` and exists(
+	select 1 from product_attribute_values pav 
+	join "attributes" a on pav.attribute_id =a.id 
+	where p.id =pav.product_id
+	and a.code = '%s'
+	and pav.value  = any($%d) 
+)
+`, key, argsID)
+		args = append(args, valueArr)
+		argsID++
+	}
+	totalCountQuery := `select count(*) from products p where 1=1` + whereQuery
+	var totalCount int
+	r.db.QueryRow(ctx, totalCountQuery, args...).Scan(&totalCount)
+
+	if totalCount == 0 {
+		return nil, 0, fmt.Errorf("Veritabaninda Hiç Ürün Bulunamadı")
+	}
 
 	// Tek sorgu atmak yerine önce ürünleri çekip sonra baglı oldugu ürünleri cekeceğiz.
-	//cünkü tek sorgu yaparsak ürün*ürününNiteliği kadar satır doner
 
 	// işe önce ürünleri çekmek ile başlayacağız ve limit ve offseti burda uyguluyor olacağız
-	productsQuery := `select p.id ,p."name" ,p.sku ,p.category_id  from products p order by name asc limit $1 offset $2`
+	productsQuery := `select p.id ,p."name" ,p.sku ,p.category_id  from products p where 1=1 ` + whereQuery
 
-	productRows, err := r.db.Query(ctx, productsQuery, limit, offset)
+	// Son satir
+	productsQuery += fmt.Sprintf(`order by name asc limit $%d offset $%d`, argsID, argsID+1)
+	args = append(args, limit, offset)
+	productRows, err := r.db.Query(ctx, productsQuery, args...)
 
 	defer productRows.Close()
 	if err != nil {
@@ -156,9 +181,6 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int) (
 		products[i].AttributeValues = attrsMap[products[i].ID]
 
 	}
-	totalCountQuery := `select count(*) from products`
-	var totalCount int
-	r.db.QueryRow(ctx, totalCountQuery).Scan(&totalCount)
 
 	return products, totalCount, nil
 }

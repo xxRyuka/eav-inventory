@@ -95,6 +95,19 @@ func (h *ProductHandler) GetById(w http.ResponseWriter, r *http.Request) {
 func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	pageSize := r.URL.Query().Get("pageSize")
+	//ram_code := r.URL.Query().Get("ram_code") // "50,v,a"  dizisini string olarak donmus burda. ama biz 2 tane ram_code gondermistik ve sadece ilkini verdi
+	// yani burda gercekten map[string][]string kullanmamız lazım diger degerleride yakalamak için
+
+	// attributeMap["key"] bize key'e ait value's stringini donecek queryden cekiyoruz
+	attributeMap := make(map[string][]string)
+
+	// Queryi Cekerken ilk parametre query Adı(key) ikinci parametre query'nin valuesleri
+	for key, values := range r.URL.Query() {
+		if key == "page" || key == "pageSize" {
+			continue
+		}
+		attributeMap[key] = values
+	}
 
 	pageVal, err := strconv.Atoi(page)
 	if err != nil {
@@ -108,7 +121,7 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	products, total, err := h.service.GetProducts(r.Context(), pageSizeVal, pageVal)
+	products, total, err := h.service.GetProducts(r.Context(), pageSizeVal, pageVal, attributeMap)
 	if err != nil {
 		response.ErrorJson(w, http.StatusInternalServerError, "ürünler veritabanından cekilirken hata olustu", fmt.Errorf("Hata : %w", err))
 		return
