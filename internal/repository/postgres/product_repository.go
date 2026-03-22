@@ -123,7 +123,7 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, f
 	}
 	// todo :     "error": "Hata : Total Count Hesaplanırken olusan hata : expected 1 arguments, got 0"
 	totalCount := 0
-	err := r.db.QueryRow(ctx, totalCountQuery).Scan(&totalCount)
+	err := r.db.QueryRow(ctx, totalCountQuery, args...).Scan(&totalCount)
 	if err != nil {
 		return nil, 0, fmt.Errorf("Total Count Hesaplanırken olusan hata : %w", err)
 	}
