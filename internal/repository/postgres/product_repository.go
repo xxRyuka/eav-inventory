@@ -101,50 +101,46 @@ func (r *ProductRepository) Update(ctx context.Context, product *domain.Product)
 }
 
 func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, filters map[string][]string) ([]domain.Product, int, error) {
-	//cünkü tek sorgu yaparsak ürün*ürününNiteliği kadar satır doner
-	var args []any // parametreleri sırasıyla burda toplayıp querye tek parametre olarak vereceğim !
-	argsID := 1
-	whereQuery := ``
+	var args []any // parametreleri tutacağım kutu
+	argsID := 1    //parametreleri $1 $2 diye yerlestirirken artık ($%d),argsID olarak verip her işlemde ++ yapacağımm
+
+	totalCountQuery := `select count(*) from products p where 1=1 `
+	productsQuery := `select p.id ,p."name" ,p.sku ,p.category_id  from products p where 1=1` //burda attributeleri cekmiyoruz
+
 	for key, valueArr := range filters {
-		whereQuery += fmt.Sprintf(` and exists(
-	select 1 from product_attribute_values pav 
-	join "attributes" a on pav.attribute_id =a.id 
-	where p.id =pav.product_id
-	and a.code = '%s'
-	and pav.value  = any($%d) 
-)
-`, key, argsID)
+		attrFilterQuery := fmt.Sprintf(`	and  exists(
+		select 1 from product_attribute_values pav 
+		join "attributes" a on pav.attribute_id =a.id 
+		where pav.product_id =p.id 
+		and a.code = '%s' -- bunu ekliyoruz ''  yoksa parametreyi kolon sanıyor
+		and pav.value=any($%d) )`,
+			key, argsID)
 		args = append(args, valueArr)
 		argsID++
+
+		productsQuery += attrFilterQuery
+		totalCountQuery += attrFilterQuery
 	}
-	totalCountQuery := `select count(*) from products p where 1=1` + whereQuery
-	var totalCount int
-	r.db.QueryRow(ctx, totalCountQuery, args...).Scan(&totalCount)
-
-	if totalCount == 0 {
-		return nil, 0, fmt.Errorf("Veritabaninda Hiç Ürün Bulunamadı")
-	}
-
-	// Tek sorgu atmak yerine önce ürünleri çekip sonra baglı oldugu ürünleri cekeceğiz.
-
-	// işe önce ürünleri çekmek ile başlayacağız ve limit ve offseti burda uyguluyor olacağız
-	productsQuery := `select p.id ,p."name" ,p.sku ,p.category_id  from products p where 1=1 ` + whereQuery
-
-	// Son satir
-	productsQuery += fmt.Sprintf(`order by name asc limit $%d offset $%d`, argsID, argsID+1)
-	args = append(args, limit, offset)
-	productRows, err := r.db.Query(ctx, productsQuery, args...)
-
-	defer productRows.Close()
+	// todo :     "error": "Hata : Total Count Hesaplanırken olusan hata : expected 1 arguments, got 0"
+	totalCount := 0
+	err := r.db.QueryRow(ctx, totalCountQuery).Scan(&totalCount)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("Total Count Hesaplanırken olusan hata : %w", err)
 	}
+	args = append(args, limit, offset)
+	paginationQuery := fmt.Sprintf(` order by p.name asc limit $%d offset $%d `, argsID, argsID+1)
+	argsID++
 
+	productsQuery += paginationQuery
+	productRows, err := r.db.Query(ctx, productsQuery, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("Urun Querysinde hata %w", err)
+	}
+	defer productRows.Close()
 	var products []domain.Product
-	var productIds []int
+	var productIds []int // az sorna attributeleri çekerken sadece elimizdeki ürünlerle ilişkili attributeleri çekmek için idlerini bir liste içine alıyorum
 	for productRows.Next() {
 		var product domain.Product
-
 		err = productRows.Scan(&product.ID, &product.Name, &product.SKU, &product.CategoryId)
 		if err != nil {
 			return nil, 0, err
@@ -152,36 +148,46 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, f
 		products = append(products, product)
 		productIds = append(productIds, product.ID)
 	}
-	// Bu noktada elimizde sayfalanmış şekilde ürünler var sirada bu ürünlerin attributelerini koymak var
 
-	attrsQuery := `select pav.product_id, pav.attribute_id ,pav.value,a."name" ,a.code ,a.data_type ,a.id   
-							from product_attribute_values pav 
-							join "attributes" a on pav.attribute_id =a.id 
-							where pav.product_id  = any($1)`
-	attrRows, err := r.db.Query(ctx, attrsQuery, productIds)
+	err = productRows.Err()
 	if err != nil {
 		return nil, 0, err
 	}
+	// Bu noktada elimizde products var şimdi attributelerini eklememiz gerekiyor
 
-	// idlerini ve pavleri içeren bir map olusturuyorum az sonra eslestircem bunu kullanmazsam for dongusunde sistmei cok yoracak
-	attrsMap := make(map[int][]domain.ProductAttributeValue)
-	for attrRows.Next() {
+	attributesQuery := ` select pav.attribute_id ,pav.product_id ,pav.value ,a.id ,a."name" ,a.code ,a.data_type 
+								from product_attribute_values pav 
+								join "attributes" a on a.id =pav.attribute_id
+								where pav.product_id = any($1) -- sadece ilislili ürünleri getiriyorum 
+`
+
+	attributeRows, err := r.db.Query(ctx, attributesQuery, productIds)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer attributeRows.Close()
+	//var pavs []domain.ProductAttributeValue // mapi kurdugum için buna gerek yokmus
+	productPavMap := make(map[int][]domain.ProductAttributeValue) // idye göre eşleştieme yapacağım aşağıya oyüzden bir map olusturuyorum
+	for attributeRows.Next() {
 		var pav domain.ProductAttributeValue
-		var productID int
-		err = attrRows.Scan(&productID, &pav.AttributeID, &pav.Value, &pav.Attribute.Name, &pav.Attribute.Code, &pav.Attribute.DataType, &pav.Attribute.ID)
-
+		var productId int
+		err = attributeRows.Scan(&pav.AttributeID, &productId, &pav.Value, &pav.Attribute.ID, &pav.Attribute.Name, &pav.Attribute.Code, &pav.Attribute.DataType)
 		if err != nil {
 			return nil, 0, err
 		}
 
-		attrsMap[productID] = append(attrsMap[productID], pav)
+		//pavs = append(pavs, pav) // bunu yapmaya gerek yokmus
+		productPavMap[productId] = append(productPavMap[productId], pav) // appende değilde direk pav'e eşitleseydik her ürün için sadece 1 tane pav eklenecekti
+	}
+	err = attributeRows.Err()
+	if err != nil {
+		return nil, 0, err
 	}
 
 	for i, _ := range products {
-		products[i].AttributeValues = attrsMap[products[i].ID]
 
+		products[i].AttributeValues = productPavMap[products[i].ID]
 	}
-
 	return products, totalCount, nil
 }
 
