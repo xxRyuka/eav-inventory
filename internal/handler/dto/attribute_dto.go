@@ -8,6 +8,8 @@ type CreateAttributeRequest struct {
 	DataType string `json:"dataType"`
 }
 
+//type DeleteAttributeRequest
+
 // Response
 
 type AttributeResponse struct {

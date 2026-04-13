@@ -14,6 +14,31 @@ type AttributeRepository struct {
 	db *pgxpool.Pool
 }
 
+func (a *AttributeRepository) Remove(ctx context.Context, id int) error {
+
+	query := `delete from attributes where id=$1`
+	exec, err := a.db.Exec(ctx, query, id)
+	if err != nil {
+
+		// exex errNoRows dondurmez
+		//if errors.Is(err, pgx.ErrNoRows) {
+		//	return fmt.Errorf("Attribute bulunamamıs %w", err)
+		//}
+		return err
+	}
+
+	// 2. ErrNoRows kontrolü yapmıyoruz. Sadece etkilenen satır sayısına bakıyoruz.
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("silinecek attribute bulunamadı (ID: %d)", id) // err yok, direkt mesaj
+	}
+	return nil
+}
+
+func (a *AttributeRepository) Update(ctx context.Context, attribute domain.Attribute) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewAttributeRepository(pool *pgxpool.Pool) *AttributeRepository {
 	return &AttributeRepository{db: pool}
 }

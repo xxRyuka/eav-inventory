@@ -96,3 +96,19 @@ func (h *AttributeHandler) GetAttributes(w http.ResponseWriter, r *http.Request)
 	pagedcalculated := response.CalculatedPagedResponse(attributes, i, limitQuery, pageQuery)
 	response.WriteJson(w, http.StatusOK, pagedcalculated, "")
 }
+
+func (h *AttributeHandler) DeleteAttribute(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	idINT, err := strconv.Atoi(id)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "Gecerli id gir", fmt.Errorf("err : %w", err))
+		return
+	}
+	err = h.attrUsecase.DeleteAttribute(r.Context(), idINT)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "Attribute Silerken sorun olustu", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	response.WriteJson(w, 200, true, "islem basarili")
+}

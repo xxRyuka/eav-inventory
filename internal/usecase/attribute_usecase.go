@@ -10,10 +10,24 @@ type AttributeUsecase interface {
 	CreateAttribute(ctx context.Context, attribute *domain.Attribute) error
 	GetAttributeByID(ctx context.Context, id int) (*domain.Attribute, error)
 	GetAttributes(ctx context.Context, page, pageSize int) ([]domain.Attribute, int, error)
+
+	DeleteAttribute(ctx context.Context, id int) error
 }
 
 type attributeUsecase struct {
 	attributeRepo domain.AttributeRepository
+}
+
+func (a *attributeUsecase) DeleteAttribute(ctx context.Context, id int) error {
+	if id < 0 {
+		return fmt.Errorf("Gecersiz id")
+	}
+
+	err := a.attributeRepo.Remove(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewAttributeService(repository domain.AttributeRepository) AttributeUsecase {
