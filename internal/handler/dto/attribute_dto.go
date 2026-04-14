@@ -8,7 +8,12 @@ type CreateAttributeRequest struct {
 	DataType string `json:"dataType"`
 }
 
-//type DeleteAttributeRequest
+type UpdateAttributeRequest struct {
+	ID       int    `json:"id"`
+	Code     string `json:"code"`
+	Name     string `json:"name"`
+	DataType string `json:"dataType"`
+}
 
 // Response
 

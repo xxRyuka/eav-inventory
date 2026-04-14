@@ -4,6 +4,7 @@ import (
 	"eav-intentory/internal/domain"
 	"eav-intentory/internal/handler/dto"
 	"eav-intentory/internal/usecase"
+	"eav-intentory/internal/usecase/command"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -111,4 +112,26 @@ func (h *AttributeHandler) DeleteAttribute(w http.ResponseWriter, r *http.Reques
 	}
 
 	response.WriteJson(w, 200, true, "islem basarili")
+}
+
+func (h *AttributeHandler) UpdateAttribute(w http.ResponseWriter, r *http.Request) {
+
+	var req dto.UpdateAttributeRequest
+	err := response.ReadJson(w, r, &req)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "bad req", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	attrCommand := command.UpdateAttributeCommand{
+		ID:       req.ID,
+		Code:     req.Code,
+		Name:     req.Name,
+		DataType: req.DataType,
+	}
+	err = h.attrUsecase.UpdateAttribute(r.Context(), &attrCommand)
+	if err != nil {
+		response.ErrorJson(w, 500, "sunucusal kaynaklı sorun", fmt.Errorf("error : %w", err))
+		return
+	}
 }

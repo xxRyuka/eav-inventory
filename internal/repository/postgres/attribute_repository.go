@@ -34,9 +34,18 @@ func (a *AttributeRepository) Remove(ctx context.Context, id int) error {
 	return nil
 }
 
-func (a *AttributeRepository) Update(ctx context.Context, attribute domain.Attribute) {
-	//TODO implement me
-	panic("implement me")
+func (a *AttributeRepository) Update(ctx context.Context, attribute *domain.Attribute) error {
+	// orm kullanmak istemiyorum evet ama her alanı tek tek set içine yazacak mıyım ?
+	query := `update attributes set code =$1,name=$2,data_type=$3 where id=$4`
+
+	exec, err := a.db.Exec(ctx, query, attribute.Code, attribute.Name, attribute.DataType, attribute.ID)
+	if err != nil {
+		return err
+	}
+	if 0 == exec.RowsAffected() {
+		return fmt.Errorf("0 Satir Etkilendi ")
+	}
+	return nil
 }
 
 func NewAttributeRepository(pool *pgxpool.Pool) *AttributeRepository {

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"eav-intentory/internal/domain"
+	"eav-intentory/internal/usecase/command"
 	"fmt"
 )
 
@@ -12,10 +13,26 @@ type AttributeUsecase interface {
 	GetAttributes(ctx context.Context, page, pageSize int) ([]domain.Attribute, int, error)
 
 	DeleteAttribute(ctx context.Context, id int) error
+	UpdateAttribute(ctx context.Context, attribute *command.UpdateAttributeCommand) error
 }
 
 type attributeUsecase struct {
 	attributeRepo domain.AttributeRepository
+}
+
+func (a *attributeUsecase) UpdateAttribute(ctx context.Context, attribute *command.UpdateAttributeCommand) error {
+
+	attr := domain.Attribute{
+		ID:       attribute.ID,
+		Code:     attribute.Code,
+		Name:     attribute.Name,
+		DataType: domain.DataType(attribute.DataType),
+	}
+	err := a.attributeRepo.Update(ctx, &attr)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *attributeUsecase) DeleteAttribute(ctx context.Context, id int) error {

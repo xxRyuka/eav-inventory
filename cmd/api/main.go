@@ -40,6 +40,7 @@ func main() {
 	mux.HandleFunc("GET /attribute/{id}", attributeHandler.GetAttributeByID)
 	mux.HandleFunc("GET /attribute/", attributeHandler.GetAttributes)
 	mux.HandleFunc("POST /attribute/{id}", attributeHandler.DeleteAttribute)
+	mux.HandleFunc("PUT /attribute/", attributeHandler.UpdateAttribute)
 
 	//categories
 	mux.HandleFunc("POST /category", categoryHandler.Create)
