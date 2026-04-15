@@ -36,9 +36,9 @@ func (a *AttributeRepository) Remove(ctx context.Context, id int) error {
 
 func (a *AttributeRepository) Update(ctx context.Context, attribute *domain.Attribute) error {
 	// orm kullanmak istemiyorum evet ama her alanı tek tek set içine yazacak mıyım ?
-	query := `update attributes set code =$1,name=$2,data_type=$3 where id=$4`
+	query := `update attributes set name=$1,data_type=$2 where id=$3`
 
-	exec, err := a.db.Exec(ctx, query, attribute.Code, attribute.Name, attribute.DataType, attribute.ID)
+	exec, err := a.db.Exec(ctx, query, attribute.Name, attribute.DataType, attribute.ID)
 	if err != nil {
 		return err
 	}
