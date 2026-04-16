@@ -124,5 +124,6 @@ func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int, fi
 	if err != nil {
 		return nil, 0, err
 	}
+	// totalide hesaplatmamız lazim
 	return products, total, nil
 }

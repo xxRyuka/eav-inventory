@@ -9,10 +9,30 @@ import (
 type CategoryUseCase interface {
 	CreateCategory(ctx context.Context, category *domain.Category) error
 	GetCategoryById(ctx context.Context, id int) (*domain.Category, error)
+
+	GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, error)
 }
 
 type categoryUseCase struct {
 	categoryRepository domain.CategoryRepository
+}
+
+func (c *categoryUseCase) GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize < 0 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+
+	categories, err := c.categoryRepository.GetAll(ctx, pageSize, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return categories, nil
 }
 
 func NewCategoryUseCase(repository domain.CategoryRepository) CategoryUseCase {

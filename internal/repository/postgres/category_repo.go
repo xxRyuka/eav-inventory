@@ -103,9 +103,27 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Categ
 }
 
 func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, error) {
-	//TODO implement me
-	panic("implement me")
+	query := `select id, name, parent_id from categories limit $1 offset $2`
 
+	rows, err := c.db.Query(ctx, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var categoryList []domain.Category
+	for rows.Next() {
+		var category domain.Category
+		err = rows.Scan(&category.ID, &category.Name, &category.ParentID)
+		if err != nil {
+			return nil, err
+		}
+		categoryList = append(categoryList, category)
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("rows error : %w", err)
+	}
+	return categoryList, nil
 }
 
 func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
