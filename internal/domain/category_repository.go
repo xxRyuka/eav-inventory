@@ -8,6 +8,7 @@ type CategoryRepository interface {
 	Delete(ctx context.Context, id int) error
 	Update(ctx context.Context, category *Category) error
 	// GetAll Tekil nesne dönerken (örn: GetById) pointer dönülür (*Product), liste dönerken value dönülür ([]Product).
-	GetAll(ctx context.Context, limit, offset int) ([]Category, error)
-	// GetPaged veya Filtreleme burda mı olmalı ? veya getAll'e mi koymaliyiz
+	GetAll(ctx context.Context, limit, offset int) ([]Category, int, error)
+	// GetPaged veya Filtreleme burda mı olmalı ? veya getAll'e mi koymaliyiz : getCategories içinde query ve path parametrelerinden erişmek en mantıklısı diye düsündüm
+	// atomic bir endpoint ile ihtiyaca gore polimorfizm sagladım
 }

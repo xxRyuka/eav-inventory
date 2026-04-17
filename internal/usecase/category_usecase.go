@@ -10,14 +10,27 @@ type CategoryUseCase interface {
 	CreateCategory(ctx context.Context, category *domain.Category) error
 	GetCategoryById(ctx context.Context, id int) (*domain.Category, error)
 
-	GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, error)
+	GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, int, error)
+
+	UpdateCategory(ctx context.Context, category *domain.Category) error
 }
 
 type categoryUseCase struct {
 	categoryRepository domain.CategoryRepository
 }
 
-func (c *categoryUseCase) GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, error) {
+func (c *categoryUseCase) UpdateCategory(ctx context.Context, category *domain.Category) error {
+	if category.ID <= 0 {
+		return fmt.Errorf(" gecersiz id %v", category.ID)
+	}
+	err := c.categoryRepository.Update(ctx, category)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *categoryUseCase) GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, int, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -27,12 +40,12 @@ func (c *categoryUseCase) GetCategories(ctx context.Context, pageSize, page int)
 
 	offset := (page - 1) * pageSize
 
-	categories, err := c.categoryRepository.GetAll(ctx, pageSize, offset)
+	categories, totalCount, err := c.categoryRepository.GetAll(ctx, pageSize, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return categories, nil
+	return categories, totalCount, nil
 }
 
 func NewCategoryUseCase(repository domain.CategoryRepository) CategoryUseCase {

@@ -13,6 +13,12 @@ type CreateCategoryAttributeRequest struct {
 	IsRequired  bool `json:"isRequired"`
 }
 
+type UpdateCategoryRequest struct {
+	//ID       int id'yi path üzerinden almam lazım
+	Name     string `json:"name"`
+	ParentID *int   `json:"parentID"`
+}
+
 // Response's
 
 type CategoryAttributeResponse struct {

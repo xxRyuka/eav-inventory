@@ -15,10 +15,10 @@ type ApiResponse struct {
 }
 type PagedRespondeData struct {
 	Data       any `json:"pagedData,omitempty"`
-	TotalCount int `json:"totalCount,omitempty"`
+	TotalCount int `json:"totalCount"`
 	PageSize   int `json:"pageSize,omitempty"`
 	Page       int `json:"page,omitempty"`
-	TotalPages int `json:"totalPages,omitempty"`
+	TotalPages int `json:"totalPages"`
 }
 
 func CalculatedPagedResponse(data any, totalCount, pageSize, page int) *PagedRespondeData {

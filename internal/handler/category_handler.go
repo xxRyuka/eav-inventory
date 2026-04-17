@@ -95,3 +95,56 @@ func (h *CategoryHandler) GetCategoryById(w http.ResponseWriter, r *http.Request
 
 	response.WriteJson(w, http.StatusOK, resp, "")
 }
+
+func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
+	pageSize := r.URL.Query().Get("pageSize")
+	page := r.URL.Query().Get("page")
+
+	pageSizeInt, err := strconv.Atoi(pageSize)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "query validation err", fmt.Errorf("err : %w", err))
+		return
+	}
+	pageInt, err := strconv.Atoi(page)
+
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "query validation err", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	categories, totalCount, err := h.categoryService.GetCategories(r.Context(), pageSizeInt, pageInt)
+	if err != nil {
+		response.ErrorJson(w, http.StatusInternalServerError, "usecase and repo err", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	resp := response.CalculatedPagedResponse(categories, totalCount, pageSizeInt, pageInt)
+
+	response.WriteJson(w, 200, resp, "basarili")
+}
+
+func (h *CategoryHandler) UpdateBaseCategory(w http.ResponseWriter, r *http.Request) {
+
+	id := r.PathValue("id")
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, fmt.Sprintf("gecersiz id (ID:%V)", id), err)
+		return
+	}
+	var request dto.UpdateCategoryRequest
+	err = response.ReadJson(w, r, &request)
+
+	category := domain.Category{
+		ID:       idInt,
+		Name:     request.Name,
+		ParentID: request.ParentID,
+	}
+	err = h.categoryService.UpdateCategory(r.Context(), &category)
+	if err != nil {
+		response.ErrorJson(w, http.StatusInternalServerError, "alt katmanlarda hata ", err)
+		return
+	}
+
+	response.WriteJson(w, http.StatusOK, true, "update succsess")
+}

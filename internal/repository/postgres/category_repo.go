@@ -102,12 +102,23 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Categ
 	return category, nil
 }
 
-func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, error) {
+func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, int, error) {
+
+	totalCountQuery := `select count(*) from categories `
+	var totalCount int
+	err := c.db.QueryRow(ctx, totalCountQuery).Scan(&totalCount)
+	if err != nil {
+		return nil, 0, err
+	}
+	if totalCount == 0 {
+		return nil, 0, fmt.Errorf("no category row ")
+	}
+
 	query := `select id, name, parent_id from categories limit $1 offset $2`
 
 	rows, err := c.db.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 	var categoryList []domain.Category
@@ -115,15 +126,15 @@ func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]d
 		var category domain.Category
 		err = rows.Scan(&category.ID, &category.Name, &category.ParentID)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		categoryList = append(categoryList, category)
 	}
 
 	if rows.Err() != nil {
-		return nil, fmt.Errorf("rows error : %w", err)
+		return nil, 0, fmt.Errorf("rows error : %w", err)
 	}
-	return categoryList, nil
+	return categoryList, totalCount, nil
 }
 
 func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
@@ -132,6 +143,17 @@ func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
 }
 
 func (c *CategoryRepository) Update(ctx context.Context, category *domain.Category) error {
-	//TODO implement me
-	panic("implement me")
+	query := `update categories set name= $1, parent_id=$2 where id =$3`
+	exec, err := c.db.Exec(ctx, query, category.Name, category.ParentID, category.ID)
+	if err != nil {
+		// db.Exec() fonksiyonu asla pgx.ErrNoRows hatası fırlatmaz !!!!
+		//if errors.Is(err, pgx.ErrNoRows) {
+		//	return fmt.Errorf("0 rows affected")
+		//}
+		return err
+	}
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("güncellenecek kategori bulunamadı (ID: %d)", category.ID)
+	}
+	return nil
 }
