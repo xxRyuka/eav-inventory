@@ -157,3 +157,77 @@ func (c *CategoryRepository) Update(ctx context.Context, category *domain.Catego
 	}
 	return nil
 }
+
+func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context, id int) ([]domain.Category, error) {
+	//once kategorileri sonra kategorilere baglı, attributeleri çekeceğim plan olarak
+	// Error handlingi en son detayli yapcam
+
+	//query := `select c.name ,c.id ,c.parent_id  from categories c // burda n+1 problemi dogdugu için tek sql ile bütün verileri cekip method içinde maplicez
+	//					join `
+
+	query := `SELECT 
+            c.id, c.name, c.parent_id,
+            ca.attribute_id, ca.is_required,
+            a.code, a.name, a.data_type
+        FROM categories c
+        LEFT JOIN category_attributes ca ON c.id = ca.category_id
+        LEFT JOIN attributes a ON ca.attribute_id = a.id`
+
+	rows, err := c.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	// Aynısı gelen kategorileri üst üste katlayacağımız (gruplayacağımız) Sözlük (Map)
+	categoryMap := make(map[int]*domain.Category) // mapler her zaman make ile olusturulur
+	for rows.Next() {
+		var category domain.Category
+
+		//var attribute domain.Attribute
+		// bunlaro pointer olarak almamızın sebebi null gelebilecek olması
+		var attributeID *int
+		var attributeCode *string
+		var attributeName *string
+		var attributeDataType *string
+
+		var isRequired *bool
+
+		err = rows.Scan(&category.ID, &category.Name, &category.ParentID, &attributeID, &isRequired, &attributeCode, &attributeName, &attributeDataType)
+		if err != nil {
+			return nil, err
+		}
+
+		if _, ok := categoryMap[category.ID]; !ok {
+			categoryMap[category.ID] = &domain.Category{
+				ID:         category.ID,
+				Name:       category.Name,
+				ParentID:   category.ParentID,
+				Attributes: make([]domain.CategoryAttribute, 0),
+			}
+		}
+
+		if attributeID != nil {
+			attr := domain.CategoryAttribute{
+				AttributeID: *attributeID,
+				Attribute: domain.Attribute{
+					ID:       *attributeID,
+					Code:     *attributeCode,
+					Name:     *attributeName,
+					DataType: domain.DataType(*attributeDataType),
+				},
+				IsRequired: *isRequired,
+			}
+
+			categoryMap[category.ID].Attributes = append(categoryMap[category.ID].Attributes, attr) // kategoriye eristim sonrada onun attributelerine erisip ekledim
+		}
+
+	}
+	var categories []domain.Category
+
+	for _, cat := range categoryMap {
+		categories = append(categories, *cat)
+	}
+	return categories, nil
+}
