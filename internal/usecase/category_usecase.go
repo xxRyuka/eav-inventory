@@ -6,17 +6,72 @@ import (
 	"fmt"
 )
 
+// todo: usecase errors girilecek
+
 type CategoryUseCase interface {
 	CreateCategory(ctx context.Context, category *domain.Category) error
 	GetCategoryById(ctx context.Context, id int) (*domain.Category, error)
-
 	GetCategories(ctx context.Context, pageSize, page int) ([]domain.Category, int, error)
-
 	UpdateCategory(ctx context.Context, category *domain.Category) error
+	GetCategoriesWithAttributes(ctx context.Context) ([]domain.Category, error)
+	RemoveAttributeFromCategory(ctx context.Context, categoryID, attributeID int) error
+	AddAttributeToCategory(ctx context.Context, categoryID, attributeID int, isRequired bool) error
+	UpdateAttributeToCategory(ctx context.Context, isRequired bool, attributeID, categoryID int) error
 }
 
 type categoryUseCase struct {
 	categoryRepository domain.CategoryRepository
+}
+
+func (c *categoryUseCase) GetCategoriesWithAttributes(ctx context.Context) ([]domain.Category, error) {
+
+	// ekstra isleme gerek yok burda suanlık
+
+	categoriesWithAttirbutes, err := c.categoryRepository.GetCategoriesWithAttirbutes(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return categoriesWithAttirbutes, nil
+}
+
+func (c *categoryUseCase) RemoveAttributeFromCategory(ctx context.Context, categoryID, attributeID int) error {
+	if categoryID <= 0 || attributeID <= 0 {
+		return fmt.Errorf("Gecersiz id parametresi, id 0'dan kucuk olamaz")
+	}
+
+	err := c.categoryRepository.RemoveAttributeToCategory(ctx, categoryID, attributeID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *categoryUseCase) AddAttributeToCategory(ctx context.Context, categoryID, attributeID int, isRequired bool) error {
+	if categoryID <= 0 || attributeID <= 0 {
+		return fmt.Errorf("Gecersiz id parametresi, id 0'dan kucuk olamaz")
+	}
+
+	err := c.categoryRepository.AddAttributeToCategory(ctx, categoryID, attributeID, isRequired)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *categoryUseCase) UpdateAttributeToCategory(ctx context.Context, isRequired bool, attributeID, categoryID int) error {
+	if categoryID <= 0 || attributeID <= 0 {
+		return fmt.Errorf("Gecersiz id parametresi, id 0'dan kucuk olamaz")
+	}
+
+	err := c.categoryRepository.UpdateAttributeToCategory(ctx, isRequired, attributeID, categoryID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *categoryUseCase) UpdateCategory(ctx context.Context, category *domain.Category) error {

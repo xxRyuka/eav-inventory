@@ -148,3 +148,28 @@ func (h *CategoryHandler) UpdateBaseCategory(w http.ResponseWriter, r *http.Requ
 
 	response.WriteJson(w, http.StatusOK, true, "update succsess")
 }
+
+// todo: no pagination for now
+func (h *CategoryHandler) GetCategoriesWithAttributes(w http.ResponseWriter, r *http.Request) {
+
+	categoriesWithAttributes, err := h.categoryService.GetCategoriesWithAttributes(r.Context())
+	if err != nil {
+		response.ErrorJson(w, 500, "sunucu kaynaklı problem", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	var response []dto.CategoryResponse
+
+	for _, attribute := range categoriesWithAttributes {
+		categoryResp := dto.CategoryResponse{
+			ID:       attribute.ID,
+			Name:     attribute.Name,
+			ParentID: attribute.ParentID,
+		}
+
+		for i, categoryAttribute := range attribute.Attributes {
+			categoryResp.Attributes = append(categoriesWithAttributes, categoryAttribute)
+		}
+	}
+
+}

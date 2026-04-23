@@ -17,7 +17,6 @@ type CategoryRepository struct {
 func NewCategoryRepository(pool *pgxpool.Pool) domain.CategoryRepository {
 	return &CategoryRepository{db: pool}
 }
-
 func (c *CategoryRepository) Create(ctx context.Context, category *domain.Category) error {
 	tx, err := c.db.Begin(ctx)
 	if err != nil {
@@ -158,11 +157,14 @@ func (c *CategoryRepository) Update(ctx context.Context, category *domain.Catego
 	return nil
 }
 
-func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context, id int) ([]domain.Category, error) {
-	//once kategorileri sonra kategorilere baglı, attributeleri çekeceğim plan olarak
+// TODO: usecase ve handler kodları yazılmadı !
+func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([]domain.Category, error) {
+	//once kategorileri sonra kategorilere baglı, attributeleri çekeceğim plan olarak xxx yanlıs yaklasım
 	// Error handlingi en son detayli yapcam
 
-	//query := `select c.name ,c.id ,c.parent_id  from categories c // burda n+1 problemi dogdugu için tek sql ile bütün verileri cekip method içinde maplicez
+	//burda n+1 problemi dogdugu için tek sql ile bütün verileri cekip method içinde maplicez
+
+	//query := `select c.name ,c.id ,c.parent_id  from categories c
 	//					join `
 
 	query := `SELECT 
@@ -194,6 +196,9 @@ func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context, id
 
 		var isRequired *bool
 
+		//var catAttr domain.CategoryAttribute
+
+		// Burda catAttr üzerinedn &catAttr.xx , &catAttr.Attribute.xy seklinde almakla tek tek field acmanin farkı ne ?
 		err = rows.Scan(&category.ID, &category.Name, &category.ParentID, &attributeID, &isRequired, &attributeCode, &attributeName, &attributeDataType)
 		if err != nil {
 			return nil, err
@@ -230,4 +235,48 @@ func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context, id
 		categories = append(categories, *cat)
 	}
 	return categories, nil
+}
+
+func (c *CategoryRepository) AddAttributeToCategory(ctx context.Context, categoryID, attributeID int, isRequired bool) error {
+
+	query := `insert into category_attributes (attribute_id ,category_id,is_required) values ($1 , $2, $3)`
+
+	exec, err := c.db.Exec(ctx, query, categoryID, attributeID, isRequired)
+	if err != nil {
+		return fmt.Errorf("err %w", err)
+	}
+
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("Attribute assingment failure ")
+	}
+	return nil
+}
+
+func (c *CategoryRepository) RemoveAttributeToCategory(ctx context.Context, categoryID, attributeID int) error {
+	query := `delete from category_attributes where attribute_id=$1 and category_id =$2`
+
+	exec, err := c.db.Exec(ctx, query, attributeID, categoryID)
+	if err != nil {
+		return err
+	}
+
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("remove process failed 0 row affected")
+	}
+	return nil
+}
+
+func (c *CategoryRepository) UpdateAttributeToCategory(ctx context.Context, isRequired bool, attributeID, categoryID int) error {
+
+	query := `update from category_attributes , set is_required =$1 where attribute_id =$2 and category_id=$3`
+
+	exec, err := c.db.Exec(ctx, query, isRequired, attributeID, categoryID)
+	if err != nil {
+		return err
+	}
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("update process failed 0 row affected")
+	}
+	return nil
+
 }
