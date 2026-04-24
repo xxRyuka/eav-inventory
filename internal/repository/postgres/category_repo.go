@@ -241,7 +241,7 @@ func (c *CategoryRepository) AddAttributeToCategory(ctx context.Context, categor
 
 	query := `insert into category_attributes (attribute_id ,category_id,is_required) values ($1 , $2, $3)`
 
-	exec, err := c.db.Exec(ctx, query, categoryID, attributeID, isRequired)
+	exec, err := c.db.Exec(ctx, query, attributeID, categoryID, isRequired)
 	if err != nil {
 		return fmt.Errorf("err %w", err)
 	}

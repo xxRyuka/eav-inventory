@@ -158,18 +158,50 @@ func (h *CategoryHandler) GetCategoriesWithAttributes(w http.ResponseWriter, r *
 		return
 	}
 
-	var response []dto.CategoryResponse
+	var responseData []dto.CategoryResponse
 
-	for _, attribute := range categoriesWithAttributes {
+	for _, category := range categoriesWithAttributes {
 		categoryResp := dto.CategoryResponse{
-			ID:       attribute.ID,
-			Name:     attribute.Name,
-			ParentID: attribute.ParentID,
+			ID:       category.ID,
+			Name:     category.Name,
+			ParentID: category.ParentID,
 		}
 
-		for i, categoryAttribute := range attribute.Attributes {
-			categoryResp.Attributes = append(categoriesWithAttributes, categoryAttribute)
+		var catAttrResp []dto.CategoryAttributeResponse
+		for _, attributeResponse := range category.Attributes {
+			catAttrResp = append(catAttrResp, dto.CategoryAttributeResponse{
+				AttributeID: attributeResponse.AttributeID,
+				IsRequired:  attributeResponse.IsRequired,
+				Code:        attributeResponse.Attribute.Code,
+				Name:        attributeResponse.Attribute.Name,
+				DataType:    string(attributeResponse.Attribute.DataType),
+			})
 		}
+
+		// Burda attributeleri dtoya atiyoruz
+		categoryResp.Attributes = catAttrResp
+
+		// burdada responseye yazıyoruz
+		responseData = append(responseData, categoryResp)
 	}
 
+	response.WriteJson(w, 200, responseData, "succsess")
+
+}
+
+func (h *CategoryHandler) AssignAttributeToCategory(w http.ResponseWriter, r *http.Request) {
+
+	var request dto.AssignAttributeToCategory
+	err := response.ReadJson(w, r, &request)
+	if err != nil {
+		response.ErrorJson(w, 400, "json okunurken hata meydana geldi ", fmt.Errorf("err :%w", err))
+		return
+	}
+	err = h.categoryService.AddAttributeToCategory(r.Context(), request.CategoryID, request.AttributeID, request.IsRequired)
+	if err != nil {
+		response.ErrorJson(w, 500, "kategoriye attribute eklenirken sunucu kaynaklı hata meydana geldi", fmt.Errorf("err :%w", err))
+		return
+	}
+
+	response.WriteJson(w, 201, true, "basarili")
 }

@@ -47,6 +47,8 @@ func main() {
 	mux.HandleFunc("GET /category/{id}", categoryHandler.GetCategoryById)
 	mux.HandleFunc("GET /category", categoryHandler.GetCategories)
 	mux.HandleFunc("PUT /category/{id}", categoryHandler.UpdateBaseCategory)
+	mux.HandleFunc("GET /categories/detailed", categoryHandler.GetCategoriesWithAttributes)
+	mux.HandleFunc("POST /category/assign-attribute", categoryHandler.AssignAttributeToCategory)
 
 	//products
 	mux.HandleFunc("POST /product", productHandler.CreateProduct)
