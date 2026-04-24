@@ -1,9 +1,9 @@
-package handler
+package catalog
 
 import (
-	"eav-intentory/internal/domain"
-	"eav-intentory/internal/handler/dto"
-	"eav-intentory/internal/usecase"
+	catalog2 "eav-intentory/internal/domain/catalog"
+	"eav-intentory/internal/handler/catalog/dto"
+	"eav-intentory/internal/usecase/catalog"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -11,10 +11,10 @@ import (
 )
 
 type CategoryHandler struct {
-	categoryService usecase.CategoryUseCase
+	categoryService catalog.CategoryUseCase
 }
 
-func NewCategoryHandler(useCase usecase.CategoryUseCase) *CategoryHandler {
+func NewCategoryHandler(useCase catalog.CategoryUseCase) *CategoryHandler {
 	return &CategoryHandler{categoryService: useCase}
 }
 
@@ -29,10 +29,10 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		response.ErrorJson(w, http.StatusBadRequest, "json bind edilemedi", err)
 		return
 	}
-	domainAttributes := make([]domain.CategoryAttribute, 0, len(req.Attributes))
+	domainAttributes := make([]catalog2.CategoryAttribute, 0, len(req.Attributes))
 
 	for _, attributeDto := range req.Attributes {
-		attr := domain.CategoryAttribute{
+		attr := catalog2.CategoryAttribute{
 			AttributeID: attributeDto.AttributeID,
 			IsRequired:  attributeDto.IsRequired,
 		}
@@ -40,7 +40,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		domainAttributes = append(domainAttributes, attr)
 	}
 
-	category := domain.Category{
+	category := catalog2.Category{
 		Name:       req.Name,
 		ParentID:   req.ParentID,
 		Attributes: domainAttributes,
@@ -135,7 +135,7 @@ func (h *CategoryHandler) UpdateBaseCategory(w http.ResponseWriter, r *http.Requ
 	var request dto.UpdateCategoryRequest
 	err = response.ReadJson(w, r, &request)
 
-	category := domain.Category{
+	category := catalog2.Category{
 		ID:       idInt,
 		Name:     request.Name,
 		ParentID: request.ParentID,
@@ -191,7 +191,7 @@ func (h *CategoryHandler) GetCategoriesWithAttributes(w http.ResponseWriter, r *
 
 func (h *CategoryHandler) AssignAttributeToCategory(w http.ResponseWriter, r *http.Request) {
 
-	var request dto.AssignAttributeToCategory
+	var request dto.AssignAttributeToCategoryRequest
 	err := response.ReadJson(w, r, &request)
 	if err != nil {
 		response.ErrorJson(w, 400, "json okunurken hata meydana geldi ", fmt.Errorf("err :%w", err))
@@ -204,4 +204,40 @@ func (h *CategoryHandler) AssignAttributeToCategory(w http.ResponseWriter, r *ht
 	}
 
 	response.WriteJson(w, 201, true, "basarili")
+}
+
+func (h *CategoryHandler) RemoveAttributeFromCategory(w http.ResponseWriter, r *http.Request) {
+
+	var req dto.RemoveAttributeFromCategoryRequest
+	err := response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", err)
+		return
+	}
+
+	err = h.categoryService.RemoveAttributeFromCategory(r.Context(), req.CategoryID, req.AttributeID)
+	if err != nil {
+		response.ErrorJson(w, 500, "sunucu kaynaklı problem", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	response.WriteJson(w, 200, true, "kaldirma islemi basarili")
+}
+
+func (h *CategoryHandler) UpdateAttributeFromCategory(w http.ResponseWriter, r *http.Request) {
+
+	var req dto.UpdateAttributeFromCategoryRequest
+	err := response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", err)
+		return
+	}
+	err = h.categoryService.UpdateAttributeToCategory(r.Context(), req.IsRequired, req.AttributeID, req.CategoryID)
+
+	if err != nil {
+		response.ErrorJson(w, 500, "sunucu kaynaklı problem", fmt.Errorf("err : %w", err))
+		return
+	}
+
+	response.WriteJson(w, 200, true, "güncelleme islemi basarili")
 }

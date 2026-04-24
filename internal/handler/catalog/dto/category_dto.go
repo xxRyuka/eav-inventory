@@ -19,7 +19,18 @@ type UpdateCategoryRequest struct {
 	ParentID *int   `json:"parentID"`
 }
 
-type AssignAttributeToCategory struct {
+type AssignAttributeToCategoryRequest struct {
+	CategoryID  int  `json:"category_id"`
+	AttributeID int  `json:"attribute_id"`
+	IsRequired  bool `json:"is_required"`
+}
+
+type RemoveAttributeFromCategoryRequest struct {
+	CategoryID  int `json:"category_id"`
+	AttributeID int `json:"attribute_id"`
+}
+
+type UpdateAttributeFromCategoryRequest struct {
 	CategoryID  int  `json:"category_id"`
 	AttributeID int  `json:"attribute_id"`
 	IsRequired  bool `json:"is_required"`

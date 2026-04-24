@@ -1,9 +1,9 @@
-package handler
+package catalog
 
 import (
-	"eav-intentory/internal/domain"
-	"eav-intentory/internal/handler/dto"
-	"eav-intentory/internal/usecase"
+	catalog2 "eav-intentory/internal/domain/catalog"
+	"eav-intentory/internal/handler/catalog/dto"
+	"eav-intentory/internal/usecase/catalog"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -12,10 +12,10 @@ import (
 )
 
 type ProductHandler struct {
-	service usecase.ProductUseCase
+	service catalog.ProductUseCase
 }
 
-func NewProductHandler(useCase usecase.ProductUseCase) *ProductHandler {
+func NewProductHandler(useCase catalog.ProductUseCase) *ProductHandler {
 	return &ProductHandler{service: useCase}
 }
 
@@ -30,7 +30,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		response.ErrorJson(w, http.StatusBadRequest, "bind edilemedi", fmt.Errorf("json okunamadı %w", err))
 		return
 	}
-	product := domain.Product{
+	product := catalog2.Product{
 		CategoryId: req.CategoryID,
 		Name:       req.Name,
 		SKU:        req.SKU,
@@ -38,7 +38,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, attribute := range req.Attributes {
-		product.AttributeValues = append(product.AttributeValues, domain.ProductAttributeValue{
+		product.AttributeValues = append(product.AttributeValues, catalog2.ProductAttributeValue{
 			AttributeID: attribute.AttributeID,
 			Value:       attribute.Value,
 		})

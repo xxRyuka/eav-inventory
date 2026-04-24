@@ -1,10 +1,10 @@
-package handler
+package catalog
 
 import (
-	"eav-intentory/internal/domain"
-	"eav-intentory/internal/handler/dto"
-	"eav-intentory/internal/usecase"
-	"eav-intentory/internal/usecase/command"
+	catalog2 "eav-intentory/internal/domain/catalog"
+	"eav-intentory/internal/handler/catalog/dto"
+	"eav-intentory/internal/usecase/catalog"
+	"eav-intentory/internal/usecase/catalog/command"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -13,10 +13,10 @@ import (
 )
 
 type AttributeHandler struct {
-	attrUsecase usecase.AttributeUsecase
+	attrUsecase catalog.AttributeUsecase
 }
 
-func NewAttributeHandler(attributeUsecase usecase.AttributeUsecase) *AttributeHandler {
+func NewAttributeHandler(attributeUsecase catalog.AttributeUsecase) *AttributeHandler {
 	return &AttributeHandler{attrUsecase: attributeUsecase}
 }
 
@@ -32,10 +32,10 @@ func (h *AttributeHandler) CreateAttribute(w http.ResponseWriter, r *http.Reques
 		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", fmt.Errorf("Json okunup structa bind edilirken hata gerçekleşti %w", err))
 		return
 	}
-	attr := domain.Attribute{
+	attr := catalog2.Attribute{
 		Code:     req.Code,
 		Name:     req.Name,
-		DataType: domain.DataType(req.DataType),
+		DataType: catalog2.DataType(req.DataType),
 	}
 	err = h.attrUsecase.CreateAttribute(r.Context(), &attr)
 	if err != nil {

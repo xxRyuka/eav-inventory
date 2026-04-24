@@ -1,32 +1,32 @@
-package usecase
+package catalog
 
 import (
 	"context"
-	"eav-intentory/internal/domain"
-	"eav-intentory/internal/usecase/command"
+	"eav-intentory/internal/domain/catalog"
+	"eav-intentory/internal/usecase/catalog/command"
 	"fmt"
 )
 
 type AttributeUsecase interface {
-	CreateAttribute(ctx context.Context, attribute *domain.Attribute) error
-	GetAttributeByID(ctx context.Context, id int) (*domain.Attribute, error)
-	GetAttributes(ctx context.Context, page, pageSize int) ([]domain.Attribute, int, error)
+	CreateAttribute(ctx context.Context, attribute *catalog.Attribute) error
+	GetAttributeByID(ctx context.Context, id int) (*catalog.Attribute, error)
+	GetAttributes(ctx context.Context, page, pageSize int) ([]catalog.Attribute, int, error)
 
 	DeleteAttribute(ctx context.Context, id int) error
 	UpdateAttribute(ctx context.Context, attribute *command.UpdateAttributeCommand) error
 }
 
 type attributeUsecase struct {
-	attributeRepo domain.AttributeRepository
+	attributeRepo catalog.AttributeRepository
 }
 
 func (a *attributeUsecase) UpdateAttribute(ctx context.Context, attribute *command.UpdateAttributeCommand) error {
 
-	attr := domain.Attribute{
+	attr := catalog.Attribute{
 		ID:       attribute.ID,
 		Code:     attribute.Code,
 		Name:     attribute.Name,
-		DataType: domain.DataType(attribute.DataType),
+		DataType: catalog.DataType(attribute.DataType),
 	}
 	err := a.attributeRepo.Update(ctx, &attr)
 	if err != nil {
@@ -47,11 +47,11 @@ func (a *attributeUsecase) DeleteAttribute(ctx context.Context, id int) error {
 	return nil
 }
 
-func NewAttributeService(repository domain.AttributeRepository) AttributeUsecase {
+func NewAttributeService(repository catalog.AttributeRepository) AttributeUsecase {
 	return &attributeUsecase{attributeRepo: repository}
 }
 
-func (a *attributeUsecase) CreateAttribute(ctx context.Context, attribute *domain.Attribute) error {
+func (a *attributeUsecase) CreateAttribute(ctx context.Context, attribute *catalog.Attribute) error {
 	err := attribute.Validate()
 	if err != nil {
 		return fmt.Errorf("Validasyon Hatasi %w", err)
@@ -64,7 +64,7 @@ func (a *attributeUsecase) CreateAttribute(ctx context.Context, attribute *domai
 
 }
 
-func (a *attributeUsecase) GetAttributeByID(ctx context.Context, id int) (*domain.Attribute, error) {
+func (a *attributeUsecase) GetAttributeByID(ctx context.Context, id int) (*catalog.Attribute, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf("id 0dan büyük olmalıdır")
 	}
@@ -76,7 +76,7 @@ func (a *attributeUsecase) GetAttributeByID(ctx context.Context, id int) (*domai
 	return attr, nil
 }
 
-func (a *attributeUsecase) GetAttributes(ctx context.Context, page, limit int) ([]domain.Attribute, int, error) {
+func (a *attributeUsecase) GetAttributes(ctx context.Context, page, limit int) ([]catalog.Attribute, int, error) {
 	if page <= 0 {
 		page = 1
 	}

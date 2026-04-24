@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"eav-intentory/internal/handler"
-	"eav-intentory/internal/repository/postgres"
-	"eav-intentory/internal/usecase"
+	catalog3 "eav-intentory/internal/handler/catalog"
+	catalog2 "eav-intentory/internal/repository/postgres/catalog"
+	"eav-intentory/internal/usecase/catalog"
 	"fmt"
 	"net/http"
 	"time"
@@ -21,17 +21,17 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	categoryRepo := postgres.NewCategoryRepository(pool)
-	categoryService := usecase.NewCategoryUseCase(categoryRepo)
-	categoryHandler := handler.NewCategoryHandler(categoryService)
+	categoryRepo := catalog2.NewCategoryRepository(pool)
+	categoryService := catalog.NewCategoryUseCase(categoryRepo)
+	categoryHandler := catalog3.NewCategoryHandler(categoryService)
 
-	productRepo := postgres.NewProductRepository(pool)
-	productService := usecase.NewProductUseCase(productRepo, categoryRepo)
-	productHandler := handler.NewProductHandler(productService)
+	productRepo := catalog2.NewProductRepository(pool)
+	productService := catalog.NewProductUseCase(productRepo, categoryRepo)
+	productHandler := catalog3.NewProductHandler(productService)
 
-	attributeRepo := postgres.NewAttributeRepository(pool)
-	attributeService := usecase.NewAttributeService(attributeRepo)
-	attributeHandler := handler.NewAttributeHandler(attributeService)
+	attributeRepo := catalog2.NewAttributeRepository(pool)
+	attributeService := catalog.NewAttributeService(attributeRepo)
+	attributeHandler := catalog3.NewAttributeHandler(attributeService)
 
 	mux := http.NewServeMux()
 
