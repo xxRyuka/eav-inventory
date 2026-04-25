@@ -1,8 +1,8 @@
-package catalog
+package postgres
 
 import (
 	"context"
-	"eav-intentory/internal/domain/catalog"
+	catalog "eav-intentory/internal/catalog/domain"
 	"errors"
 	"fmt"
 

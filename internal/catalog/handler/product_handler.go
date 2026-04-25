@@ -1,9 +1,9 @@
-package catalog
+package handler
 
 import (
-	catalog2 "eav-intentory/internal/domain/catalog"
-	"eav-intentory/internal/handler/catalog/dto"
-	"eav-intentory/internal/usecase/catalog"
+	catalog2 "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/handler/dto"
+	"eav-intentory/internal/catalog/usecase"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -12,10 +12,10 @@ import (
 )
 
 type ProductHandler struct {
-	service catalog.ProductUseCase
+	service usecase.ProductUseCase
 }
 
-func NewProductHandler(useCase catalog.ProductUseCase) *ProductHandler {
+func NewProductHandler(useCase usecase.ProductUseCase) *ProductHandler {
 	return &ProductHandler{service: useCase}
 }
 

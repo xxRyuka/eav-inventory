@@ -1,10 +1,10 @@
-package catalog
+package handler
 
 import (
-	catalog2 "eav-intentory/internal/domain/catalog"
-	"eav-intentory/internal/handler/catalog/dto"
-	"eav-intentory/internal/usecase/catalog"
-	"eav-intentory/internal/usecase/catalog/command"
+	catalog2 "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/handler/dto"
+	"eav-intentory/internal/catalog/usecase"
+	"eav-intentory/internal/catalog/usecase/command"
 	"eav-intentory/pkg/response"
 	"fmt"
 	"net/http"
@@ -13,10 +13,10 @@ import (
 )
 
 type AttributeHandler struct {
-	attrUsecase catalog.AttributeUsecase
+	attrUsecase usecase.AttributeUsecase
 }
 
-func NewAttributeHandler(attributeUsecase catalog.AttributeUsecase) *AttributeHandler {
+func NewAttributeHandler(attributeUsecase usecase.AttributeUsecase) *AttributeHandler {
 	return &AttributeHandler{attrUsecase: attributeUsecase}
 }
 

@@ -1,8 +1,8 @@
-package catalog
+package usecase
 
 import (
 	"context"
-	"eav-intentory/internal/domain/catalog"
+	catalog "eav-intentory/internal/catalog/domain"
 	"fmt"
 )
 
