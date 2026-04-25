@@ -208,14 +208,24 @@ func (h *CategoryHandler) AssignAttributeToCategory(w http.ResponseWriter, r *ht
 
 func (h *CategoryHandler) RemoveAttributeFromCategory(w http.ResponseWriter, r *http.Request) {
 
-	var req dto.RemoveAttributeFromCategoryRequest
-	err := response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
+	//var req dto.RemoveAttributeFromCategoryRequest -> rest mimarisinde delete isteklerinde body olmamalı !
+	//err := response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
+	//if err != nil {
+	//	response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", err)
+	//	return
+	//}
+
+	categoryId := r.PathValue("categoryId")
+	categoryID, err := strconv.Atoi(categoryId)
 	if err != nil {
-		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", err)
 		return
 	}
-
-	err = h.categoryService.RemoveAttributeFromCategory(r.Context(), req.CategoryID, req.AttributeID)
+	attributeId := r.PathValue("attributeId")
+	attributeID, err := strconv.Atoi(attributeId)
+	if err != nil {
+		return
+	}
+	err = h.categoryService.RemoveAttributeFromCategory(r.Context(), categoryID, attributeID)
 	if err != nil {
 		response.ErrorJson(w, 500, "sunucu kaynaklı problem", fmt.Errorf("err : %w", err))
 		return
@@ -226,13 +236,27 @@ func (h *CategoryHandler) RemoveAttributeFromCategory(w http.ResponseWriter, r *
 
 func (h *CategoryHandler) UpdateAttributeFromCategory(w http.ResponseWriter, r *http.Request) {
 
+	categoryID := r.PathValue("categoryId")
+	categoryId, err := strconv.Atoi(categoryID)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "path degerleri  okunurken hata meydana geldi ", err)
+
+		return
+	}
+	attributeID := r.PathValue("attributeId")
+	attributeId, err := strconv.Atoi(attributeID)
+	if err != nil {
+		response.ErrorJson(w, http.StatusBadRequest, "path degerleri  okunurken hata meydana geldi ", err)
+		return
+	}
+
 	var req dto.UpdateAttributeFromCategoryRequest
-	err := response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
+	err = response.ReadJson(w, r, &req) // üzerine işlem yapacağı ve değiştireceği için pointerini veriyorum
 	if err != nil {
 		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", err)
 		return
 	}
-	err = h.categoryService.UpdateAttributeToCategory(r.Context(), req.IsRequired, req.AttributeID, req.CategoryID)
+	err = h.categoryService.UpdateAttributeToCategory(r.Context(), req.IsRequired, attributeId, categoryId)
 
 	if err != nil {
 		response.ErrorJson(w, 500, "sunucu kaynaklı problem", fmt.Errorf("err : %w", err))

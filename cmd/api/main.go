@@ -49,6 +49,8 @@ func main() {
 	mux.HandleFunc("PUT /category/{id}", categoryHandler.UpdateBaseCategory)
 	mux.HandleFunc("GET /categories/detailed", categoryHandler.GetCategoriesWithAttributes)
 	mux.HandleFunc("POST /category/assign-attribute", categoryHandler.AssignAttributeToCategory)
+	mux.HandleFunc("PUT /category/{categoryId}/attribute/{attributeId}", categoryHandler.UpdateAttributeFromCategory)
+	mux.HandleFunc("DELETE /category/{categoryId}/attribute/{attributeId}", categoryHandler.RemoveAttributeFromCategory)
 
 	//products
 	mux.HandleFunc("POST /product", productHandler.CreateProduct)

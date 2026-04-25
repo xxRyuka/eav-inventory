@@ -268,7 +268,7 @@ func (c *CategoryRepository) RemoveAttributeToCategory(ctx context.Context, cate
 
 func (c *CategoryRepository) UpdateAttributeToCategory(ctx context.Context, isRequired bool, attributeID, categoryID int) error {
 
-	query := `update from category_attributes , set is_required =$1 where attribute_id =$2 and category_id=$3`
+	query := `update category_attributes set is_required =$1 where attribute_id =$2 and category_id=$3`
 
 	exec, err := c.db.Exec(ctx, query, isRequired, attributeID, categoryID)
 	if err != nil {

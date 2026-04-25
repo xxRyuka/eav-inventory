@@ -25,15 +25,16 @@ type AssignAttributeToCategoryRequest struct {
 	IsRequired  bool `json:"is_required"`
 }
 
-type RemoveAttributeFromCategoryRequest struct {
-	CategoryID  int `json:"category_id"`
-	AttributeID int `json:"attribute_id"`
-}
+// REST mimarisinde delete istekleri body bildirmiyor !
+//type RemoveAttributeFromCategoryRequest struct {
+//	CategoryID  int `json:"category_id"`
+//	AttributeID int `json:"attribute_id"`
+//}
 
 type UpdateAttributeFromCategoryRequest struct {
-	CategoryID  int  `json:"category_id"`
-	AttributeID int  `json:"attribute_id"`
-	IsRequired  bool `json:"is_required"`
+	//CategoryID  int  `json:"category_id"` // rest mimarisine uymak istiyorum oyüzden bunları path ile almam lazım
+	//AttributeID int  `json:"attribute_id"`
+	IsRequired bool `json:"is_required"`
 }
 
 // Response's
