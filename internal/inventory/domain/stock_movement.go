@@ -12,8 +12,8 @@ const (
 	Adjustment MovementType = "ADJUSTMENT" // Stok düzeltme (sayım sonrası)
 )
 
-// StockMovements 1 işlem için 2 db rows yazılır ornegin bi depoda mal girdiyse öbür depodan cıkmıstır
-type StockMovements struct {
+// StockMovement 1 işlem için 2 db rows yazılır ornegin bi depoda mal girdiyse öbür depodan cıkmıstır
+type StockMovement struct {
 	WarehouseID  int // hangi depoda gerceklesti
 	ProductID    int // Hangi ürün
 	Quantity     int // Kaç Tane
