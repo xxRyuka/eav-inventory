@@ -1,7 +1,7 @@
 package handler
 
 import (
-	catalog2 "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"eav-intentory/internal/catalog/handler/dto"
 	"eav-intentory/internal/catalog/usecase"
 	"eav-intentory/internal/catalog/usecase/command"
@@ -32,10 +32,10 @@ func (h *AttributeHandler) CreateAttribute(w http.ResponseWriter, r *http.Reques
 		response.ErrorJson(w, http.StatusBadRequest, "json okunurken hata meydana geldi", fmt.Errorf("Json okunup structa bind edilirken hata gerçekleşti %w", err))
 		return
 	}
-	attr := catalog2.Attribute{
+	attr := domain.Attribute{
 		Code:     req.Code,
 		Name:     req.Name,
-		DataType: catalog2.DataType(req.DataType),
+		DataType: domain.DataType(req.DataType),
 	}
 	err = h.attrUsecase.CreateAttribute(r.Context(), &attr)
 	if err != nil {

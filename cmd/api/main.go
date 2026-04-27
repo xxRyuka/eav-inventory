@@ -5,6 +5,9 @@ import (
 	catalogHandler "eav-intentory/internal/catalog/handler"
 	catalogRepository "eav-intentory/internal/catalog/repository/postgres"
 	catalogUseCase "eav-intentory/internal/catalog/usecase"
+	inventory_handler "eav-intentory/internal/inventory/handler"
+	inventory_repository "eav-intentory/internal/inventory/repository"
+	inventory_usecase "eav-intentory/internal/inventory/usecase"
 	"fmt"
 	"net/http"
 	"time"
@@ -33,6 +36,10 @@ func main() {
 	attributeService := catalogUseCase.NewAttributeService(attributeRepo)
 	attributeHandler := catalogHandler.NewAttributeHandler(attributeService)
 
+	// todo : importlarda hala problem var warehouse katmanlarını alıp di bağlantısını yapacağım fakat importlar sinirimi bozdu
+	warehouseRepo := inventory_repository.NewWarehouseRepository(pool)
+	warehouseService := inventory_usecase.NewWarehouseUsecase(warehouseRepo)
+	warehouseHandler := inventory_handler.NewWarehouseHandler(warehouseService)
 	mux := http.NewServeMux()
 
 	//attributes
@@ -56,6 +63,8 @@ func main() {
 	mux.HandleFunc("POST /product", productHandler.CreateProduct)
 	mux.HandleFunc("GET /product/{id}", productHandler.GetById)
 	mux.HandleFunc("GET /product/", productHandler.GetProducts)
+
+	mux.HandleFunc("POST /warehouse", warehouseHandler.CreateWarehouse)
 
 	server := http.Server{
 		Addr:         "localhost:8080",

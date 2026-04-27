@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	catalog "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"errors"
 	"fmt"
 
@@ -18,7 +18,7 @@ func NewProductRepository(pool *pgxpool.Pool) *ProductRepository {
 	return &ProductRepository{db: pool}
 }
 
-func (r *ProductRepository) Create(ctx context.Context, p *catalog.Product) error {
+func (r *ProductRepository) Create(ctx context.Context, p *domain.Product) error {
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -48,9 +48,9 @@ func (r *ProductRepository) Create(ctx context.Context, p *catalog.Product) erro
 	return nil
 }
 
-func (r *ProductRepository) GetById(ctx context.Context, id int) (*catalog.Product, error) {
+func (r *ProductRepository) GetById(ctx context.Context, id int) (*domain.Product, error) {
 
-	var product catalog.Product
+	var product domain.Product
 	productQuery := `select p.id ,p."name" ,p.sku ,p.category_id from products p where p.id=$1`
 
 	err := r.db.QueryRow(ctx, productQuery, id).Scan(&product.ID, &product.Name, &product.SKU, &product.CategoryId)
@@ -70,10 +70,10 @@ where pav.product_id =$1`
 		return nil, fmt.Errorf("Nitelikler Veritabaninda sorgulanırken hata olustu : %w", err)
 	}
 	defer rows.Close()
-	var pavs []catalog.ProductAttributeValue
+	var pavs []domain.ProductAttributeValue
 
 	for rows.Next() {
-		var pav catalog.ProductAttributeValue
+		var pav domain.ProductAttributeValue
 		err := rows.Scan(&pav.AttributeID, &pav.Value, &pav.Attribute.Name, &pav.Attribute.Code, &pav.Attribute.DataType)
 		if err != nil {
 			return nil, fmt.Errorf("pav's sorgusunda hata : %w", err)
@@ -95,12 +95,12 @@ func (r *ProductRepository) Delete(ctx context.Context, id int) error {
 	panic("implement me")
 }
 
-func (r *ProductRepository) Update(ctx context.Context, product *catalog.Product) error {
+func (r *ProductRepository) Update(ctx context.Context, product *domain.Product) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, filters map[string][]string) ([]catalog.Product, int, error) {
+func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, filters map[string][]string) ([]domain.Product, int, error) {
 	var args []any // parametreleri tutacağım kutu
 	argsID := 1    //parametreleri $1 $2 diye yerlestirirken artık ($%d),argsID olarak verip her işlemde ++ yapacağımm
 
@@ -137,10 +137,10 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, f
 		return nil, 0, fmt.Errorf("Urun Querysinde hata %w", err)
 	}
 	defer productRows.Close()
-	var products []catalog.Product
+	var products []domain.Product
 	var productIds []int // az sorna attributeleri çekerken sadece elimizdeki ürünlerle ilişkili attributeleri çekmek için idlerini bir liste içine alıyorum
 	for productRows.Next() {
-		var product catalog.Product
+		var product domain.Product
 		err = productRows.Scan(&product.ID, &product.Name, &product.SKU, &product.CategoryId)
 		if err != nil {
 			return nil, 0, err
@@ -167,9 +167,9 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, f
 	}
 	defer attributeRows.Close()
 	//var pavs []domain.ProductAttributeValue // mapi kurdugum için buna gerek yokmus
-	productPavMap := make(map[int][]catalog.ProductAttributeValue) // idye göre eşleştieme yapacağım aşağıya oyüzden bir map olusturuyorum
+	productPavMap := make(map[int][]domain.ProductAttributeValue) // idye göre eşleştieme yapacağım aşağıya oyüzden bir map olusturuyorum
 	for attributeRows.Next() {
-		var pav catalog.ProductAttributeValue
+		var pav domain.ProductAttributeValue
 		var productId int
 		err = attributeRows.Scan(&pav.AttributeID, &productId, &pav.Value, &pav.Attribute.ID, &pav.Attribute.Name, &pav.Attribute.Code, &pav.Attribute.DataType)
 		if err != nil {
@@ -191,12 +191,12 @@ func (r *ProductRepository) GetAll(ctx context.Context, limit int, offset int, f
 	return products, totalCount, nil
 }
 
-func (r *ProductRepository) UpdateAttributes(ctx context.Context, productId int, values []catalog.ProductAttributeValue) error {
+func (r *ProductRepository) UpdateAttributes(ctx context.Context, productId int, values []domain.ProductAttributeValue) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *ProductRepository) SearchByAttribute(ctx context.Context, filters map[int]string) ([]catalog.Product, error) {
+func (r *ProductRepository) SearchByAttribute(ctx context.Context, filters map[int]string) ([]domain.Product, error) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -11,10 +11,13 @@ type WarehouseRepository struct {
 	db *pgxpool.Pool
 }
 
+func NewWarehouseRepository(db *pgxpool.Pool) *WarehouseRepository {
+	return &WarehouseRepository{db: db}
+}
 func (w WarehouseRepository) Create(ctx context.Context, warehouse *domain.Warehouse) (int, error) {
 
 	var id int
-	query := `insert into warehouses (location,name,code) values ($1,$2,$3,$4) returning id`
+	query := `insert into warehouses (location,name,code) values ($1,$2,$3) returning id`
 
 	row := w.db.QueryRow(ctx, query, warehouse.Location, warehouse.Name, warehouse.Code)
 	err := row.Scan(&id)

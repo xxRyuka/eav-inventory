@@ -1,7 +1,7 @@
 package handler
 
 import (
-	catalog2 "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"eav-intentory/internal/catalog/handler/dto"
 	"eav-intentory/internal/catalog/usecase"
 	"eav-intentory/pkg/response"
@@ -29,10 +29,10 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		response.ErrorJson(w, http.StatusBadRequest, "json bind edilemedi", err)
 		return
 	}
-	domainAttributes := make([]catalog2.CategoryAttribute, 0, len(req.Attributes))
+	domainAttributes := make([]domain.CategoryAttribute, 0, len(req.Attributes))
 
 	for _, attributeDto := range req.Attributes {
-		attr := catalog2.CategoryAttribute{
+		attr := domain.CategoryAttribute{
 			AttributeID: attributeDto.AttributeID,
 			IsRequired:  attributeDto.IsRequired,
 		}
@@ -40,7 +40,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		domainAttributes = append(domainAttributes, attr)
 	}
 
-	category := catalog2.Category{
+	category := domain.Category{
 		Name:       req.Name,
 		ParentID:   req.ParentID,
 		Attributes: domainAttributes,
@@ -135,7 +135,7 @@ func (h *CategoryHandler) UpdateBaseCategory(w http.ResponseWriter, r *http.Requ
 	var request dto.UpdateCategoryRequest
 	err = response.ReadJson(w, r, &request)
 
-	category := catalog2.Category{
+	category := domain.Category{
 		ID:       idInt,
 		Name:     request.Name,
 		ParentID: request.ParentID,

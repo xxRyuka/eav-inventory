@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	catalog "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"errors"
 	"fmt"
 
@@ -14,10 +14,10 @@ type CategoryRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewCategoryRepository(pool *pgxpool.Pool) catalog.CategoryRepository {
+func NewCategoryRepository(pool *pgxpool.Pool) domain.CategoryRepository {
 	return &CategoryRepository{db: pool}
 }
-func (c *CategoryRepository) Create(ctx context.Context, category *catalog.Category) error {
+func (c *CategoryRepository) Create(ctx context.Context, category *domain.Category) error {
 	tx, err := c.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -46,9 +46,9 @@ func (c *CategoryRepository) Create(ctx context.Context, category *catalog.Categ
 	return nil
 }
 
-func (c *CategoryRepository) GetById(ctx context.Context, id int) (*catalog.Category, error) {
+func (c *CategoryRepository) GetById(ctx context.Context, id int) (*domain.Category, error) {
 
-	category := &catalog.Category{}
+	category := &domain.Category{}
 	categoryQuery := `select id, name, parent_id from categories where id=$1`
 	// parent_id veritabanında NULL olabileceği için onu bir pointer ile karşılıyoruz.
 	var parentID *int
@@ -78,9 +78,9 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*catalog.Cate
 	}
 	defer rows.Close()
 
-	var catAttrs []catalog.CategoryAttribute
+	var catAttrs []domain.CategoryAttribute
 	for rows.Next() {
-		var cat_attr catalog.CategoryAttribute
+		var cat_attr domain.CategoryAttribute
 		err = rows.Scan(
 			&cat_attr.AttributeID,
 			&cat_attr.IsRequired,
@@ -101,7 +101,7 @@ func (c *CategoryRepository) GetById(ctx context.Context, id int) (*catalog.Cate
 	return category, nil
 }
 
-func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]catalog.Category, int, error) {
+func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]domain.Category, int, error) {
 
 	totalCountQuery := `select count(*) from categories `
 	var totalCount int
@@ -120,9 +120,9 @@ func (c *CategoryRepository) GetAll(ctx context.Context, limit, offset int) ([]c
 		return nil, 0, err
 	}
 	defer rows.Close()
-	var categoryList []catalog.Category
+	var categoryList []domain.Category
 	for rows.Next() {
-		var category catalog.Category
+		var category domain.Category
 		err = rows.Scan(&category.ID, &category.Name, &category.ParentID)
 		if err != nil {
 			return nil, 0, err
@@ -141,7 +141,7 @@ func (c *CategoryRepository) Delete(ctx context.Context, id int) error {
 	panic("implement me")
 }
 
-func (c *CategoryRepository) Update(ctx context.Context, category *catalog.Category) error {
+func (c *CategoryRepository) Update(ctx context.Context, category *domain.Category) error {
 	query := `update categories set name= $1, parent_id=$2 where id =$3`
 	exec, err := c.db.Exec(ctx, query, category.Name, category.ParentID, category.ID)
 	if err != nil {
@@ -158,7 +158,7 @@ func (c *CategoryRepository) Update(ctx context.Context, category *catalog.Categ
 }
 
 // TODO: usecase ve handler kodları yazılmadı !
-func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([]catalog.Category, error) {
+func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([]domain.Category, error) {
 	//once kategorileri sonra kategorilere baglı, attributeleri çekeceğim plan olarak xxx yanlıs yaklasım
 	// Error handlingi en son detayli yapcam
 
@@ -183,9 +183,9 @@ func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([
 	defer rows.Close()
 
 	// Aynısı gelen kategorileri üst üste katlayacağımız (gruplayacağımız) Sözlük (Map)
-	categoryMap := make(map[int]*catalog.Category) // mapler her zaman make ile olusturulur
+	categoryMap := make(map[int]*domain.Category) // mapler her zaman make ile olusturulur
 	for rows.Next() {
-		var category catalog.Category
+		var category domain.Category
 
 		//var attribute domain.Attribute
 		// bunlaro pointer olarak almamızın sebebi null gelebilecek olması
@@ -205,22 +205,22 @@ func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([
 		}
 
 		if _, ok := categoryMap[category.ID]; !ok {
-			categoryMap[category.ID] = &catalog.Category{
+			categoryMap[category.ID] = &domain.Category{
 				ID:         category.ID,
 				Name:       category.Name,
 				ParentID:   category.ParentID,
-				Attributes: make([]catalog.CategoryAttribute, 0),
+				Attributes: make([]domain.CategoryAttribute, 0),
 			}
 		}
 
 		if attributeID != nil {
-			attr := catalog.CategoryAttribute{
+			attr := domain.CategoryAttribute{
 				AttributeID: *attributeID,
-				Attribute: catalog.Attribute{
+				Attribute: domain.Attribute{
 					ID:       *attributeID,
 					Code:     *attributeCode,
 					Name:     *attributeName,
-					DataType: catalog.DataType(*attributeDataType),
+					DataType: domain.DataType(*attributeDataType),
 				},
 				IsRequired: *isRequired,
 			}
@@ -229,7 +229,7 @@ func (c *CategoryRepository) GetCategoriesWithAttirbutes(ctx context.Context) ([
 		}
 
 	}
-	var categories []catalog.Category
+	var categories []domain.Category
 
 	for _, cat := range categoryMap {
 		categories = append(categories, *cat)

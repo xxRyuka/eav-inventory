@@ -1,7 +1,7 @@
 package inventory_dto
 
 type CreateCategoryRequest struct {
-	Name     string
-	Code     string
-	Location string
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Location string `json:"location"`
 }

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	catalog2 "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"eav-intentory/internal/catalog/handler/dto"
 	"eav-intentory/internal/catalog/usecase"
 	"eav-intentory/pkg/response"
@@ -30,7 +30,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		response.ErrorJson(w, http.StatusBadRequest, "bind edilemedi", fmt.Errorf("json okunamadı %w", err))
 		return
 	}
-	product := catalog2.Product{
+	product := domain.Product{
 		CategoryId: req.CategoryID,
 		Name:       req.Name,
 		SKU:        req.SKU,
@@ -38,7 +38,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, attribute := range req.Attributes {
-		product.AttributeValues = append(product.AttributeValues, catalog2.ProductAttributeValue{
+		product.AttributeValues = append(product.AttributeValues, domain.ProductAttributeValue{
 			AttributeID: attribute.AttributeID,
 			Value:       attribute.Value,
 		})

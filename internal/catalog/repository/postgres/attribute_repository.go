@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	catalog "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"errors"
 	"fmt"
 
@@ -34,7 +34,7 @@ func (a *AttributeRepository) Remove(ctx context.Context, id int) error {
 	return nil
 }
 
-func (a *AttributeRepository) Update(ctx context.Context, attribute *catalog.Attribute) error {
+func (a *AttributeRepository) Update(ctx context.Context, attribute *domain.Attribute) error {
 	// orm kullanmak istemiyorum evet ama her alanı tek tek set içine yazacak mıyım ?
 	query := `update attributes set name=$1,data_type=$2 where id=$3`
 
@@ -52,7 +52,7 @@ func NewAttributeRepository(pool *pgxpool.Pool) *AttributeRepository {
 	return &AttributeRepository{db: pool}
 }
 
-func (a *AttributeRepository) Create(ctx context.Context, attribute *catalog.Attribute) error {
+func (a *AttributeRepository) Create(ctx context.Context, attribute *domain.Attribute) error {
 
 	query := `insert into attributes (code,name,data_type) values ($1,$2,$3) returning id`
 
@@ -63,10 +63,10 @@ func (a *AttributeRepository) Create(ctx context.Context, attribute *catalog.Att
 	return nil
 }
 
-func (a *AttributeRepository) GetById(ctx context.Context, id int) (*catalog.Attribute, error) {
+func (a *AttributeRepository) GetById(ctx context.Context, id int) (*domain.Attribute, error) {
 	query := `select id, name, code, data_type from attributes where id=$1`
 
-	var attribute catalog.Attribute // bunu pointer olarak almakla almamak ne değiştirir ? ve ek olarak attrbute := domain.attribute{} seklinde olusturmak ile farkı nedir ?
+	var attribute domain.Attribute // bunu pointer olarak almakla almamak ne değiştirir ? ve ek olarak attrbute := domain.attribute{} seklinde olusturmak ile farkı nedir ?
 	// pointer olarak tanımlarsan nesneyi yaratmaz ve sadece pointer olusrturur ve bu nesneye atama yapmaya calısırken panic verir olmayana atama yapamazsın !
 	// attribute := domain.Attribute{} olarak tanımlamanında bi farkı olmazdı sadece idiomatic oluor böyle
 	err := a.db.QueryRow(ctx, query, id).Scan(&attribute.ID, &attribute.Name, &attribute.Code, &attribute.DataType)
@@ -81,7 +81,7 @@ func (a *AttributeRepository) GetById(ctx context.Context, id int) (*catalog.Att
 	return &attribute, nil
 }
 
-func (a *AttributeRepository) GetAll(ctx context.Context, limit int, offset int) ([]catalog.Attribute, int, error) {
+func (a *AttributeRepository) GetAll(ctx context.Context, limit int, offset int) ([]domain.Attribute, int, error) {
 
 	var totalCount int
 	totalCountQuery := `select count(*) from attributes`
@@ -95,12 +95,12 @@ func (a *AttributeRepository) GetAll(ctx context.Context, limit int, offset int)
 	}
 
 	defer rows.Close()
-	var attributes []catalog.Attribute // neden := ile tanımlanmıyor burdada kafamı karıstırdı bu konuyuda netleştirmek istiyorum
+	var attributes []domain.Attribute // neden := ile tanımlanmıyor burdada kafamı karıstırdı bu konuyuda netleştirmek istiyorum
 	// := ile acarsak 0 elemanlı dizi olsuturo ama varla olusturursak nil slice olusturuyo ve ilk append ile allocate edilior
 	for rows.Next() {
 		// attr := domain.Attribute{} // var ile kullanmanin farkları ne ? bu yanlıs mı ?
 		// bunuda idiomatic olması için var ile tanımlamak gerekiyormus cünkü direk init etmiyoruz
-		var attr catalog.Attribute
+		var attr domain.Attribute
 		err = rows.Scan(&attr.ID, &attr.Name, &attr.Code, &attr.DataType)
 		if err != nil {
 			return nil, 0, fmt.Errorf("veritabani objesi bind edilirken olusan hata %w", err)

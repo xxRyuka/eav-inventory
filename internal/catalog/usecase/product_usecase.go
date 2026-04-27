@@ -2,31 +2,31 @@ package usecase
 
 import (
 	"context"
-	catalog "eav-intentory/internal/catalog/domain"
+	"eav-intentory/internal/catalog/domain"
 	"fmt"
 	"strconv"
 	"strings"
 )
 
 type ProductUseCase interface {
-	CreateProduct(ctx context.Context, product *catalog.Product) error
-	GetProductById(ctx context.Context, id int) (*catalog.Product, error)
-	GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]catalog.Product, int, error)
+	CreateProduct(ctx context.Context, product *domain.Product) error
+	GetProductById(ctx context.Context, id int) (*domain.Product, error)
+	GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]domain.Product, int, error)
 }
 
 type productUseCase struct {
-	productRepo  catalog.ProductRepository
-	categoryRepo catalog.CategoryRepository
+	productRepo  domain.ProductRepository
+	categoryRepo domain.CategoryRepository
 }
 
-func NewProductUseCase(productRepository catalog.ProductRepository, categoryRepository catalog.CategoryRepository) ProductUseCase {
+func NewProductUseCase(productRepository domain.ProductRepository, categoryRepository domain.CategoryRepository) ProductUseCase {
 	return &productUseCase{
 		productRepo:  productRepository,
 		categoryRepo: categoryRepository,
 	}
 }
 
-func (p *productUseCase) CreateProduct(ctx context.Context, product *catalog.Product) error {
+func (p *productUseCase) CreateProduct(ctx context.Context, product *domain.Product) error {
 
 	err := product.Validate()
 	if err != nil {
@@ -43,7 +43,7 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *catalog.Pro
 
 	for _, attribute := range attributes {
 
-		var userValue *catalog.ProductAttributeValue // burda neden kodda pointer kullandın == Kodda kendim gordum yazarken pointer kullanmaz isek nil kontrolu yapamayiz
+		var userValue *domain.ProductAttributeValue // burda neden kodda pointer kullandın == Kodda kendim gordum yazarken pointer kullanmaz isek nil kontrolu yapamayiz
 		for i, value := range product.AttributeValues {
 			if value.AttributeID == attribute.AttributeID {
 				userValue = &product.AttributeValues[i] // Buraya direk value diyemez miydik ? => diyemezdik üzerinde değişiklik yaptıgımız tek sey for dongusu için gecici olarak acılan değişken olurdu bu durumda !
@@ -59,16 +59,16 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *catalog.Pro
 			cleanVal := strings.TrimSpace(userValue.Value)
 
 			switch attribute.Attribute.DataType {
-			case catalog.TypeInt:
+			case domain.TypeInt:
 				_, err = strconv.Atoi(cleanVal)
 				if err != nil {
 					return fmt.Errorf("'%s' alani tam sayi olmalidir, girilen gecersiz deger: %s", attribute.Attribute.Name, userValue.Value)
 				}
-			case catalog.TypeBool:
+			case domain.TypeBool:
 				if _, err = strconv.ParseBool(cleanVal); err != nil {
 					return fmt.Errorf("%s alani boolean ifade olmalidir gidirlen gecersiz deger %s", attribute.Attribute.Name, userValue.Value)
 				}
-			case catalog.TypeString:
+			case domain.TypeString:
 				// String ise zaten string'dir, ekstra bir kontrole gerek yok ama boş mu diye bakabiliriz.
 				if cleanVal == "" {
 					return fmt.Errorf("'%s' alani bos birakilamaz", attribute.Attribute.Name)
@@ -89,7 +89,7 @@ func (p *productUseCase) CreateProduct(ctx context.Context, product *catalog.Pro
 	// ?? Şablon "Bu alan tam sayıdır" diyorsa, kullanıcı harf girmiş mi? bu kontrolu nasıl yaparım bilemedim
 }
 
-func (p *productUseCase) GetProductById(ctx context.Context, id int) (*catalog.Product, error) {
+func (p *productUseCase) GetProductById(ctx context.Context, id int) (*domain.Product, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf("0'dan büyük bir tam sayı değer giriniz id için (id:%v)", id)
 	}
@@ -101,7 +101,7 @@ func (p *productUseCase) GetProductById(ctx context.Context, id int) (*catalog.P
 
 	return product, nil
 }
-func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]catalog.Product, int, error) {
+func (p *productUseCase) GetProducts(ctx context.Context, pageSize, page int, filters map[string][]string) ([]domain.Product, int, error) {
 	// optimizations
 
 	if pageSize <= 0 {
