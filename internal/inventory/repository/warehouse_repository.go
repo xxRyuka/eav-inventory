@@ -3,6 +3,7 @@ package inventory_repository
 import (
 	"context"
 	"eav-intentory/internal/inventory/domain"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -29,21 +30,66 @@ func (w WarehouseRepository) Create(ctx context.Context, warehouse *domain.Wareh
 }
 
 func (w WarehouseRepository) GetAll(ctx context.Context) ([]domain.Warehouse, error) {
-	//TODO implement me
-	panic("implement me")
+	query := `select id ,name, code, location from warehoues`
+
+	rows, err := w.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	var warehouses []domain.Warehouse
+	for rows.Next() {
+		var warehouse domain.Warehouse // burda pointer olarak versem ne olur ki ?
+		err = rows.Scan(&warehouse.ID, &warehouse.Name, &warehouse.Code, &warehouse.Location)
+		if err != nil {
+			return nil, err
+		}
+		warehouses = append(warehouses, warehouse)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return warehouses, nil
 }
 
 func (w WarehouseRepository) GetById(ctx context.Context, id int) (*domain.Warehouse, error) {
-	//TODO implement me
-	panic("implement me")
+
+	query := `select id ,name, code, location from warehoues where id = $1`
+	var warehouse domain.Warehouse // burda pointer olarak versem ne olur ki ?
+	err := w.db.QueryRow(ctx, query, id).Scan(&warehouse.ID, &warehouse.Name, &warehouse.Code, &warehouse.Location)
+	if err != nil {
+		return nil, err
+	}
+	return &warehouse, nil
 }
 
 func (w WarehouseRepository) Update(ctx context.Context, warehouse *domain.Warehouse) error {
-	//TODO implement me
-	panic("implement me")
+	query := `update warehouses set name =$1,code = $2,location=  $3 where id = $4`
+	// todo: handleri id'yi pathden warehouseyi bodyden cekmeli !
+	exec, err := w.db.Exec(ctx, query, warehouse.Name, warehouse.Code, warehouse.Location, warehouse.ID)
+	if err != nil {
+		return err
+	}
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("0 rows affected")
+	}
+
+	return nil
 }
 
 func (w WarehouseRepository) Delete(ctx context.Context, id int) error {
-	//TODO implement me
-	panic("implement me")
+
+	query := `delete from warehouses where id = $1`
+	exec, err := w.db.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	if exec.RowsAffected() == 0 {
+		return fmt.Errorf("0 rows affected")
+	}
+
+	return nil
 }
