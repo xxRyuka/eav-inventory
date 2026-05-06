@@ -65,6 +65,10 @@ func main() {
 	mux.HandleFunc("GET /product/", productHandler.GetProducts)
 
 	mux.HandleFunc("POST /warehouse", warehouseHandler.CreateWarehouse)
+	mux.HandleFunc("GET /warehouse", warehouseHandler.GetWarehouses)
+	mux.HandleFunc("GET /warehouse/{id}", warehouseHandler.GetWarehouseById)
+	mux.HandleFunc("PUT /warehouse/{id}", warehouseHandler.UpdateWarehouse)
+	mux.HandleFunc("DELETE /warehouse/{id}", warehouseHandler.DeleteWarehouse)
 
 	server := http.Server{
 		Addr:         "localhost:8080",

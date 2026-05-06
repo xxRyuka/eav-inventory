@@ -80,7 +80,7 @@ func ReadJson(w http.ResponseWriter, r *http.Request, destination any) error {
 	// Gelen JSON'da bizim DTO'da olmayan bir alan varsa hata fırlat (Strict parsing)
 	decoder.DisallowUnknownFields()
 
-	err := decoder.Decode(destination) // Burda neden & kullanmadın interface oldugu için mi ?
+	err := decoder.Decode(destination) // Burda neden & kullanmadın interface oldugu için mi ? = evet interfaceler zaten pointer !
 	if err != nil {
 		return err
 	}

@@ -2,5 +2,6 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/migrations/000004_create_inventory_tables.up.sql" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/migrations/000005_add_product_table_fk.up.sql" dialect="GenericSQL" />
   </component>
 </project>
