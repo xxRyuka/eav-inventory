@@ -12,7 +12,7 @@ type WarehouseRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewWarehouseRepository(db *pgxpool.Pool) *WarehouseRepository {
+func NewWarehouseRepository(db *pgxpool.Pool) domain.WarehouseRepository {
 	return &WarehouseRepository{db: db}
 }
 func (w WarehouseRepository) Create(ctx context.Context, warehouse *domain.Warehouse) (int, error) {

@@ -1,4 +1,4 @@
-﻿alter table stocks
+alter table stocks
     add constraint fk_stocks_products
         foreign key (product_id)
             references products (id)
