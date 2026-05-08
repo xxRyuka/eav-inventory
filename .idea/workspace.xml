@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="436ce63a-3bc3-4203-a76a-a7edd08875f0" name="Changes" comment="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/inventory/usecase/stock_usecase.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/shared/postgres_tx_manager/dbtx.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/shared/postgres_tx_manager/tx_manager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/inventory/domain/stock_movement_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/domain/stock_movement_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/inventory/domain/stock_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/domain/stock_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/inventory/repository/stock_movement_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/repository/stock_movement_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/inventory/repository/stock_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/repository/stock_repository.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/Ryuka/Desktop/Go/prj/inventory/eav-inventory" value="3CJVtPPyQAEOSBUiVD4g38NIaUe" />
+    </persistenceIdMap>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.26.2" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;xxRyuka&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/xxRyuka/eav-inventory&quot;,
+    &quot;accountId&quot;: &quot;9b7a982f-868a-4327-9045-6a021bc1ac48&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/internal/repository/postgres/category_repo.go" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3CJVtPPyQAEOSBUiVD4g38NIaUe" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build main.go.executor&quot;: &quot;Run&quot;,
+    &quot;Makefile Target.migrateup.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.GoLinterPluginOnboardingV2&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginStorageMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.analysis.ui.options.defaults&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ryuka/Desktop/Go/prj/inventory/eav-inventory&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.completion.popup&quot;,
+    &quot;sql.codeStylePanel.last.previewDialect&quot;: &quot;PostgreSQL&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Ryuka\Desktop\Go\prj\inventory\eav-inventory\docs" />
+      <recent name="C:\Users\Ryuka\Desktop\Go\prj\inventory\eav-inventory\internal\catalog\repository\postgres" />
+      <recent name="C:\Users\Ryuka\Desktop\Go\prj\inventory\eav-inventory\internal\catalog\handler" />
+      <recent name="C:\Users\Ryuka\Desktop\Go\prj\inventory\eav-inventory\internal\catalog\domain" />
+      <recent name="C:\Users\Ryuka\Desktop\Go\prj\inventory\eav-inventory\internal\catalog\usecase" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build main.go">
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="eav-intentory" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="eav-intentory" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/api/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="migrateup" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="migrateup" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go" />
+        <item itemvalue="Makefile Target.migrateup" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-72a9cf600ed8-3105c3b11fe0-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-261.22158.291" />
+        <option value="bundled-js-predefined-d6986cc7102b-3bd3a6803838-JavaScript-GO-261.22158.291" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="436ce63a-3bc3-4203-a76a-a7edd08875f0" name="Changes" comment="" />
+      <created>1776103874328</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776103874328</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="comeback delete attribute endpoint implemented" />
+    <MESSAGE value="update attribute endpoint" />
+    <MESSAGE value="attribute filed unique" />
+    <MESSAGE value="category usecase and repository" />
+    <MESSAGE value="category update base fileds repository-&gt; endpoint" />
+    <MESSAGE value="detailed category endpoint 1/3 reposityory code implemented" />
+    <MESSAGE value="deliver layer handler's have dto problem i will fix all" />
+    <MESSAGE value="getDetailed category handler and assign attribute to category handlers implemented and tested" />
+    <MESSAGE value="The file structure was organized as package by feature.&#10;&#10;update and remove attributes frm category handlers implemented" />
+    <MESSAGE value="catalog endpoints finished" />
+    <MESSAGE value="folder structure fixed -&gt; PACKAGE By FEATURE - DDD" />
+    <MESSAGE value="inventory module domain models implemented and folder structure planned" />
+    <MESSAGE value="migration files for inventory module !" />
+    <MESSAGE value="imports problem : not resolved" />
+    <MESSAGE value="warehouse di fix" />
+    <MESSAGE value="warehouse repository implemented" />
+    <MESSAGE value="warehouse uc and handler layers implemented and tested" />
+    <MESSAGE value="warehouse uc and handler layers implemented and tested need write down sql" />
+    <MESSAGE value="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !" />
+    <option name="LAST_COMMIT_MESSAGE" value="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/inventory/repository/warehouse_repository.go</url>
+          <line>25</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/inventory/handler/warehouse_handler.go</url>
+          <line>39</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/internal/inventory/handler/warehouse_handler.go</url>
+          <line>36</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

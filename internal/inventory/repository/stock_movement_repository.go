@@ -3,6 +3,7 @@ package inventory_repository
 import (
 	"context"
 	"eav-intentory/internal/inventory/domain"
+	"eav-intentory/internal/shared/postgres_tx_manager"
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,7 +18,7 @@ func NewStockMovementRepository(db *pgxpool.Pool) domain.StockMovementRepository
 }
 
 // movementin uc katmanından domain layerda belirlediğim const enumlardan purhcase_in olarak gelmesi gerekiyor burda kontrol etmeyeceğim buranın gorevi değil !
-func (s StockMovementRepository) Create(ctx context.Context, movement domain.StockMovement) error {
+func (s StockMovementRepository) Create(ctx context.Context, tx postgres_tx_manager.DbExecutor, movement domain.StockMovement) error {
 
 	querySM := `insert into stock_movements (
 					warehouse_id,
@@ -25,7 +26,7 @@ func (s StockMovementRepository) Create(ctx context.Context, movement domain.Sto
 					quantity,
 					movement_type)	values ($1,$2,$3,$4)`
 
-	exec, err := s.db.Exec(ctx, querySM, movement.WarehouseID, movement.ProductID, movement.Quantity, movement.MovementType)
+	exec, err := tx.Exec(ctx, querySM, movement.WarehouseID, movement.ProductID, movement.Quantity, movement.MovementType)
 	if err != nil {
 		return err
 	}
