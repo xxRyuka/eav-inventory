@@ -4,27 +4,18 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="436ce63a-3bc3-4203-a76a-a7edd08875f0" name="Changes" comment="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/information_schema.FNRwLQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/eav_db.g3PnsQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/information_schema.FNRwLQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/pg_catalog.0S1ZNQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/7aefd2df-250b-4a4a-8b93-3e9f25d07e46/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/inventory/usecase/stock_usecase.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/shared/postgres_tx_manager/dbtx.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/shared/postgres_tx_manager/tx_manager.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+    <list default="true" id="436ce63a-3bc3-4203-a76a-a7edd08875f0" name="Changes" comment="hersey karısmıs durumda">
+      <change afterPath="$PROJECT_DIR$/internal/inventory/handler/dto/stock_dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/inventory/handler/stock_handler.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/inventory/usecase/command/stock_movement.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/inventory/domain/stock_movement_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/domain/stock_movement_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/inventory/domain/stock_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/domain/stock_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/inventory/repository/stock_movement_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/repository/stock_movement_repository.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/inventory/repository/stock_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/repository/stock_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/inventory/usecase/stock_usecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/inventory/usecase/stock_usecase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/shared/postgres_tx_manager/tx_manager.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,7 +186,8 @@
     <MESSAGE value="warehouse uc and handler layers implemented and tested" />
     <MESSAGE value="warehouse uc and handler layers implemented and tested need write down sql" />
     <MESSAGE value="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !" />
-    <option name="LAST_COMMIT_MESSAGE" value="repo kodlarını yazdım yarın uow yapısını kurcam uc katmanında uygulucam !" />
+    <MESSAGE value="hersey karısmıs durumda" />
+    <option name="LAST_COMMIT_MESSAGE" value="hersey karısmıs durumda" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

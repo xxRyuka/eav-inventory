@@ -70,6 +70,10 @@ func main() {
 	mux.HandleFunc("PUT /warehouse/{id}", warehouseHandler.UpdateWarehouse)
 	mux.HandleFunc("DELETE /warehouse/{id}", warehouseHandler.DeleteWarehouse)
 
+	stockUsecase := inventory_usecase.NewStockUseCase(pool) // handlera verilecek en son
+	stockHandler := inventory_handler.NewStockHandler(stockUsecase)
+
+	mux.HandleFunc("POST /stock/purchasein", stockHandler.PurchaseIn)
 	server := http.Server{
 		Addr:         "localhost:8080",
 		Handler:      mux,
